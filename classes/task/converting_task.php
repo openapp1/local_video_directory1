@@ -46,7 +46,7 @@ class converting_task extends \core\task\scheduled_task {
         $streamingurl = $settings->streaming . '/';
         $ffmpeg = $settings->ffmpeg;
         $ffprobe = $settings->ffprobe;
-        $ffmpegsettings = '-strict -2 -c:v libx264 -crf 22 -c:a aac -movflags faststart -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2"';
+        $ffmpegsettings = '-strict -2 -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 22 -c:a aac -movflags faststart -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2"';
         $thumbnailseconds = $settings->thumbnail_seconds;
         $php = $settings->php;
         $multiresolution = $settings->multiresolution;
@@ -81,10 +81,38 @@ class converting_task extends \core\task\scheduled_task {
                 $insert = $DB->insert_record('local_video_directory_vers', $record);
             }
             if (file_exists($ffmpeg)) {
-                $convert = '"' . $ffmpeg . '" -i ' . escapeshellarg($origdir . $video->id) . ' '
-                    . $ffmpegsettings . ' '
-                    . escapeshellarg($streamingdir . $video->id . ".mp4");
-                exec($convert);
+                if (file_exists($ffprobe)) {
+                    // Get video length.
+                    $videocodec = $ffprobe ." -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1" .
+                        ":nokey=1 " . escapeshellarg($origdir . $video->id );
+                    $audiocodec = $ffprobe ." -v error -select_streams a:0 -show_entries stream=codec_name -of default=noprint_wrappers=1" .
+                        ":nokey=1 " . escapeshellarg($origdir . $video->id );
+                    $firefoxbug = $ffprobe ." -v error -select_streams v:0 -show_entries stream=profile -of default=noprint_wrappers=1" .
+                        ":nokey=1 " . escapeshellarg($origdir . $video->id );
+                    $videocodecval = exec($videocodec);
+                    $audiocodecval = exec($audiocodec);
+                    $firefoxbugval = exec( $firefoxbug);
+                    if (strpos($videocodecval , '264') !== false && $audiocodecval == 'aac' && strpos($firefoxbugval, 'Predictive') === false) {
+                        echo "not nead to convert";
+                        if (copy( $origdir . $video->id , $streamingdir . $video->id . ".mp4")) {
+                            unlink($origdir . $video->id );
+                        } else {
+                            $convert = '"' .$ffmpeg. '" -hide_banner -loglevel warning -i ' .escapeshellarg($origdir.$video->id).' '
+                            . $ffmpegsettings . ' '
+                            . escapeshellarg($streamingdir . $video->id . ".mp4");
+                            $exec = exec($convert);
+                            echo " converted";
+                        }
+                    } else {
+                        $convert = '"' .$ffmpeg. '" -hide_banner -loglevel warning -i ' .escapeshellarg($origdir . $video->id) . ' '
+                        . $ffmpegsettings . ' '
+                        . escapeshellarg($streamingdir . $video->id . ".mp4");
+                        $exec = exec($convert);
+                        echo " converted";
+                    }
+                } else {
+                    echo "Ffprobe is not configured well, No such file : " . $ffprobe . "\n";
+                }
                 // Convert encoded file to hashed name and directory.
                 $contenthash = sha1_file($streamingdir . $video->id . ".mp4");
                 $hashdirectory = substr($contenthash, 0, 2);
@@ -109,19 +137,19 @@ class converting_task extends \core\task\scheduled_task {
                 if (is_numeric($thumbnailseconds)) {
                     $timing = gmdate("H:i:s", $thumbnailseconds);
                 } else {
-                    $timing = "00:00:05";
+                    $timing = "00:00:01";
                 }
 
                 if (file_exists($ffmpeg)) {
-                    $thumb = '"' . $ffmpeg . '" -i ' . escapeshellarg($origdir . $video->id) .
+                    $thumb = '"' . $ffmpeg . '" -hide_banner -loglevel warning -i ' . $hashedfile .
                             " -ss " . escapeshellarg($timing) . " -vframes 1 " .
                             escapeshellarg($streamingdir . $hashdirectory . '/' . $contenthash . ".png");
-                    $thumbmini = '"' . $ffmpeg . '" -i ' . escapeshellarg($origdir . $video->id) .
+                    $thumbmini = '"' . $ffmpeg . '" -hide_banner -loglevel warning -i ' . $hashedfile .
                             " -ss " . escapeshellarg($timing) . " -vframes 1 -vf scale=100:-1 " .
                             escapeshellarg($streamingdir . $hashdirectory . '/' . $contenthash . "-mini.png");
 
-                    exec($thumb);
-                    exec($thumbmini);
+                    $exec = exec($thumb);
+                    $exec = exec($thumbmini);
                 } else {
                     echo "Ffmpeg is not configured well, No such file : " . $ffmpeg . "\n";
                 }
@@ -159,7 +187,23 @@ class converting_task extends \core\task\scheduled_task {
 
                 $update = $DB->update_record("local_video_directory", $record);
                 // Delete original uploaded file.
-                unlink($origdir . $video->id);
+                // Tami 13-06-20.
+                if (file_exists($origdir . $video->id)) {
+                    unlink($origdir . $video->id);
+                }//>
+
+                // Sent notification email - Tami.
+                if (get_config('local_video_directory' , 'sendemailwhenready')) {
+                    $userid = $DB->get_field("local_video_directory" , 'owner_id', array('id' => $video->id) );
+                    $user = $DB->get_record('user', array('id' => $userid));
+                    $from = get_config('noreplyaddress');
+                    $subject = get_string('emailsubject' , 'local_video_directory' );
+                    $msg = get_string('emailmsg', 'local_video_directory' );
+                    if ($user) {
+                        email_to_user( $user,  $from,   $subject,  $msg  .$video->id );
+                    }
+                }//>
+
             } else {
                 // Update that converted and streaming URL.
                 $record = array("id" => $video->id, "convert_status" => "5");

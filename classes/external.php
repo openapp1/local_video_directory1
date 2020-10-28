@@ -173,6 +173,7 @@ class local_video_directory_external extends external_api {
      * @return string
      */
     public static function videolist($data) {
+        //print_r($data);die;
         global $USER, $CFG, $DB, $OUTPUT, $SESSION;
         // Parameter validation.
         // REQUIRED.
@@ -210,19 +211,22 @@ class local_video_directory_external extends external_api {
         } else {
             $order = 0;
         }
-
+//print_r($order);die;
         if (isset($SESSION->video_tags) && is_array($SESSION->video_tags)) {
             $list = $SESSION->video_tags;
             $total = count(local_video_directory_get_videos_by_tags($list, 0, null, null, $search));
             $videos = local_video_directory_get_videos_by_tags($list, 0, $videodata->start, $videodata->length, $search, $order);
         } else {
             $total = count(local_video_directory_get_videos(0, null, null, $search));
+           
             $videos = local_video_directory_get_videos($order, $videodata->start, $videodata->length, $search);
         }
         // Check if mod_videostream is enabled.
         $isvideostream = $DB->get_record('modules', ['name' => 'videostream']);
 
         foreach ($videos as $video) {
+            $video->timecreated = $video->timecreated? date("Y-m-d H:i:s", $video->timecreated) : null;
+            $video->deletiondate = $video->deletiondate? date("Y-m-d H:i:s", $video->deletiondate) : null;
             if (is_numeric($video->convert_status)) {
                 $video->convert_status = get_string('state_' . $video->convert_status, 'local_video_directory');
                 if (($settings->showwhere != 0) && ($isvideostream)) {
