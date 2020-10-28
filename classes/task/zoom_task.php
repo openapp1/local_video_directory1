@@ -99,7 +99,7 @@ class zoom_task extends \core\task\scheduled_task {
                         }
                         $oldname = '';
                         if (strlen($name) >= 100) {
-                            $oldname = 'zoom_meeting_of_' .$user->email . '_at_' . $moovie->recording_start . '.mp4'
+                            $oldname = 'zoom_meeting_of_' .$user->email . '_at_' . $moovie->recording_start . '.mp4';
                             $oldname = str_replace(' ', '_', $oldname);
                             $oldname = str_replace('/', '', $oldname);
                         }
@@ -171,7 +171,7 @@ class zoom_task extends \core\task\scheduled_task {
                                     file_put_contents( $pathlog, "\n" . 'ERROR adding new video. in meeting id: ' . $meeting->id . ' name: ' . $name . ' status: ' . $status  . " msg:" , FILE_APPEND);
                                 }
                             }
-                            $close = $api->patchmeetingrecordingssettings( $moovie->meeting_id, 0);
+                            //$close = $api->patchmeetingrecordingssettings( $moovie->meeting_id, 0);
                         } else {
                             file_put_contents( $pathlog, "\n" . 'video is exsist already. video name: ' . $name , FILE_APPEND);
                         }
