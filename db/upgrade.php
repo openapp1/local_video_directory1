@@ -375,5 +375,62 @@ function xmldb_local_video_directory_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020020900, 'local', 'video_directory');
     }
 
+    if ($oldversion < 2020140501) {
+        $table = new xmldb_table('local_video_directory_zoom');
+
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('zoom_meeting_id', XMLDB_TYPE_INTEGER, '10', 0, XMLDB_NOTNULL, null, null);
+        $table->add_field('video_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('video_original_name', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        $field = new xmldb_field('video_original_name', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_plugin_savepoint(true, 2020140501, 'local', 'video_directory');
+    }
+
+    if ($oldversion < 2020140504) {
+        $table = new xmldb_table('local_video_directory_cut');
+        $field = new xmldb_field('cuttype', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_plugin_savepoint(true, 2020140504, 'local', 'video_directory');
+    }
+
+    if ($oldversion < 2020140507) {
+
+        $table = new xmldb_table('local_video_directory');
+        $field = new xmldb_field('deletiondate', XMLDB_TYPE_CHAR, '13', null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_plugin_savepoint(true, 2020140507, 'local', 'video_directory');
+    }
+
+    if ($oldversion < 2020140510) {
+
+        $table = new xmldb_table('local_video_directory');
+        $field = new xmldb_field('orig_filename', XMLDB_TYPE_CHAR, '1333', null, XMLDB_NOTNULL, null, null);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_type($table, $field);
+        }
+        upgrade_plugin_savepoint(true, 2020140510, 'local', 'video_directory');
+    }
+    if ($oldversion < 2020140509) {
+
+        $table = new xmldb_table('local_video_directory_zoom');
+        $field = new xmldb_field('video_original_name', XMLDB_TYPE_CHAR, '1333', null, null, null, null);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_type($table, $field);
+        }
+        upgrade_plugin_savepoint(true, 2020140510, 'local', 'video_directory');
+    }
     return 1;
 }

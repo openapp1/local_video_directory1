@@ -33,5 +33,32 @@ $tasks = array(
         'day' => '*' ,
         'dayofweek' => '*' ,
         'month' => '*'
+    ),
+    array(
+        'classname' => 'local_video_directory\task\enrolteachers_task' ,
+        'blocking' => 0 ,
+        'minute' => '*' ,
+        'hour' => '*' ,
+        'day' => '*' ,
+        'dayofweek' => '*' ,
+        'month' => '*'
+    ),
+    array(
+        'classname' => 'local_video_directory\task\zoom_task' ,
+        'blocking' => 0 ,
+        'minute' => '00' ,
+        'hour' => '00' ,
+        'day' => '*' ,
+        'dayofweek' => '*' ,
+        'month' => '*'
+    ),
+    array(
+        'classname' => 'local_video_directory\task\deletion_task' ,
+        'blocking' => 0 ,
+        'minute' => '00' ,
+        'hour' => '1' ,
+        'day' => '*' ,
+        'dayofweek' => '*' ,
+        'month' => '*'
     )
 );

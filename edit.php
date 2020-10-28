@@ -72,6 +72,7 @@ class edit_form extends moodleform {
             $length = $video->length;
             $timecreated = strftime("%A, %d %B %Y %H:%M", $video->timecreated);
             $description = $video->description;
+            $deletiondate = $video->deletiondate;
         } else {
             $origfilename = "";
             $owner = 0;
@@ -79,6 +80,7 @@ class edit_form extends moodleform {
             $length = 0;
             $timecreated = 0;
             $description = "";
+            $deletiondate = strtotime('+2 year', time());
         }
         $mform = $this->_form;
 
@@ -142,9 +144,25 @@ class edit_form extends moodleform {
 
         if (is_video_admin($USER) && (is_array($owner))) {
             $owneruser = $DB->get_record('user', ['id' => $video->owner_id]);
-            $owner[$video->owner_id] = $owneruser->firstname . " " . $owneruser->lastname;
+            if (isset($owneruser) && !empty($owneruser)) {
+                $owner[$video->owner_id] = $owneruser->firstname . " " . $owneruser->lastname;
+            }
             $mform->addElement('select', 'owner', get_string('owner', 'local_video_directory'), $owner);
         }
+
+        $options = array(
+            'startyear' => date("Y"), 
+            'stopyear'  => date("Y")+ 50,
+            'timezone'  => 99,
+            'optional'  => true
+        );
+        $mform->addElement('date_selector', 'deletiondate', get_string('deletiondate', 'local_video_directory'), $options);
+        $mform->setType('deletiondate', PARAM_RAW);
+        $mform->setDefault('deletiondate',  $deletiondate);
+
+        //$mform->addElement('advcheckbox', 'remove', '', get_string('active', 'local_video_directory'), array('group' => 1), array(0, 1));
+       // $mform->setDefault('remove', $remove ); // Default value.
+       // $mform->disabledIf('deletiondate', 'remove', 'notchecked');
 
         $mform->addElement('text', 'length', get_string('length', 'local_video_directory'), ['disabled' => true]);
         $mform->setType('length', PARAM_RAW);
@@ -180,10 +198,13 @@ if ($mform->is_cancelled()) {
             $DB->insert_record('local_video_directory_catvid', ['video_id' => $fromform->id, 'cat_id' => $cat]);
         }
     }
+   // print_r($fromform->deletiondate);die;
     $record = array("id" => $fromform->id,
                     "orig_filename" => $fromform->origfilename,
                     "description" => $fromform->description,
-                    "usergroup" => $fromform->usergroup);
+                    "usergroup" => $fromform->usergroup,
+                    "deletiondate" => $fromform->deletiondate > 0 ? $fromform->deletiondate: null,
+                );
 
     if ((isset($_POST['owner'])) && (is_video_admin($USER))) { // Only admins updates owners.
         $record['owner_id'] = $_POST['owner'];

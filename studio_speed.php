@@ -43,22 +43,22 @@ require_once("$CFG->libdir/formslib.php");
 $id = optional_param('video_id', 0, PARAM_INT);
 
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading(get_string('studio','local_video_directory'));
-$PAGE->set_title(get_string('studio','local_video_directory'));
+$PAGE->set_heading(get_string('studio', 'local_video_directory'));
+$PAGE->set_title(get_string('studio', 'local_video_directory'));
 $PAGE->set_url('/local/video_directory/studio_cut.php?video_id=' . $id);
-$PAGE->navbar->add(get_string('pluginname','local_video_directory'), new moodle_url('/local/video_directory/'));
-$PAGE->navbar->add(get_string('studio', 'local_video_directory'), new moodle_url('/local/video_directory/studio.php?video_id=' . $id));
-$PAGE->navbar->add(get_string('speed','local_video_directory'));
+$PAGE->navbar->add(get_string('pluginname', 'local_video_directory'), new moodle_url('/local/video_directory/'));
+$PAGE->navbar->add(get_string('studio', 'local_video_directory'), new moodle_url('/local/video_directory/studio.php?video_id=' .
+    $id));
+$PAGE->navbar->add(get_string('speed', 'local_video_directory'));
 
 class videocut_form extends moodleform {
-    //Add elements to form
+    // Add elements to form.
     public function definition() {
 
         $mform = $this->_form; // Don't forget the underscore! 
 
 
         $id = optional_param('video_id', 0, PARAM_INT);
-        
         $mform->addElement('hidden', 'id', $id);
         $mform->setType('id', PARAM_INT);
 
@@ -70,11 +70,17 @@ class videocut_form extends moodleform {
 		$select = $mform->addElement('select', 'speed', get_string('speed','local_video_directory'), $speed);
 		$select->setMultiple(false);
 
-		$mform->addElement('select', 'save', get_string('save', 'moodle'),
-		[ 'version' => get_string('newversion', 'local_video_directory'), 
-		  'new' => get_string('newvideo', 'local_video_directory')
-		]);
-
+    $disableversion = get_config('local_video_directory' , 'disableversion');
+    if (isset($disableversion) && $disableversion != 0) {
+        $mform->addElement('select', 'save', get_string('save', 'moodle'),
+		    ['new' => get_string('newvideo', 'local_video_directory')]);
+    } else {
+      $mform->addElement('select', 'save', get_string('save', 'moodle'),
+      [ 'version' => get_string('newversion', 'local_video_directory'),
+        'new' => get_string('newvideo', 'local_video_directory')
+      ]);
+    }
+		
       		$buttonarray=array();
 			$buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
 			$buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('cancel'));
@@ -96,7 +102,7 @@ if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot . '/local/video_directory/studio.php?video_id=' . $id);
 } else if ($fromform = $mform->get_data()) {
   //In this case you process validated data. $mform->get_data() returns data posted in form.
-    $now = time();
+  $now = time();
    	$record = array("video_id" => $fromform->id, 
                     "user_id" => $USER->id,
                     "save" => $fromform->save,
@@ -116,9 +122,11 @@ if ($mform->is_cancelled()) {
   //  $mform->set_data($toform);
   //displays the form
 	echo $OUTPUT->header();
-          
     $video = $DB->get_record('local_video_directory', array("id" => $id));
-    $streaming = get_streaming_server_url() . "/" . $id . ".mp4";
+    $videoname = $video->orig_filename;
+    echo $OUTPUT->heading(get_string('speed', 'local_video_directory') .
+    ' - <span class="videoname">' . $videoname . '</span>');
+    $streaming = get_streaming_server_url() . "/" . local_video_directory_get_filename($id) . ".mp4";
     echo $OUTPUT->render_from_template('local_video_directory/video_float',
     ['wwwroot' => $CFG->wwwroot,  'id' => $id,
     'thumb' => str_replace("-", "&second=", $video->thumb),

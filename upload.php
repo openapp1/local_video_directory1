@@ -126,6 +126,15 @@ class upload_form extends moodleform {
             $mform->getElement('category')->setMultiple(true);
         }
 
+        $options = array(
+            'startyear' => date("Y"), 
+            'stopyear'  => date("Y")+ 50,
+            'timezone'  => 99,
+            'optional'  => true
+        );
+        $mform->addElement('date_selector', 'deletiondate', get_string('deletiondate', 'local_video_directory'), $options);
+        $mform->setType('deletiondate', PARAM_RAW);
+
         $mform->addElement('filemanager', 'attachments', get_string('file', 'moodle'), null,
                     array('subdirs' => 3, 'maxfiles' => 50,
                           'accepted_types' => array('audio' , 'video'), 'return_types' => FILE_INTERNAL | FILE_EXTERNAL));
@@ -192,9 +201,13 @@ if ($mform->is_cancelled()) {
         $record = array(    'orig_filename' => $name,
                             'owner_id' => $owner,
                             'uniqid' => uniqid('', true),
-                            'usergroup' => $usergroup);
+                            'usergroup' => $usergroup,
+                            "deletiondate" => $fromform->deletiondate > 0 ? $fromform->deletiondate: null
+                        );
         if ((isset($fromform->private)) && ($fromform->private)) {
             $record['private'] = 1;
+        } else {
+            $record['private'] = 0;
         }
         // New video.
         if ($fromform->id == 0) {
