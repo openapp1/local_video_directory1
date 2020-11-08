@@ -73,23 +73,25 @@ class zoom_task extends \core\task\scheduled_task {
             foreach ($meetings->meetings as $meeting) {
                 $newvideoid = 0;
                 $recordings = $meeting->recording_files;
-                $moovie = null;
-                $flag = 0;
+                $moovies = null;
+                $flag = null;
                 foreach ($recordings as $key => $rec) {
-                    if ($rec->file_type && strcmp($rec->file_type, 'MP4') == 0 && $flag == 0) {
-                        $moovie = $rec;
+                    if (isset($rec->file_type) && strcmp($rec->file_type, 'MP4') == 0 && $flag[$rec->recording_start] == 0) {
+                        $moovies[$rec->recording_start] = $rec;
                     }
-                    if ($rec->recording_type && strcmp($rec->recording_type, 'shared_screen_with_speaker_view') == 0) {
-                        $moovie = $rec;
-                        $flag = 2;
+                    if (isset($rec->recording_type) && strcmp($rec->recording_type, 'shared_screen_with_speaker_view') == 0) {
+                        $moovies[$rec->recording_start] = $rec;
+                        $flag[$rec->recording_start] = 2;
                     }
-                    if ($rec->recording_type && strcmp($rec->recording_type, 'shared_screen') == 0 && $flag != 2) {
-                        $moovie = $rec;
-                        $flag = 1;
+                    if (isset($rec->recording_type) && strcmp($rec->recording_type, 'shared_screen') == 0 && $flag[$rec->recording_start] != 2) {
+                        $moovies[$rec->recording_start] = $rec;
+                        $flag[$rec->recording_start] = 1;
                     }
-                } if ( is_null($moovie)) {
+                } if ( is_null($moovies)) {
                     file_put_contents( $pathlog, "\n" . 'no video file to meeting id: ' . $meeting->id , FILE_APPEND);
-                } else {
+		    continue;
+                } 
+		foreach ($moovies as $moovie)  {
                     $duration = date_diff (date_create($moovie->recording_end) , date_create($moovie->recording_start));
                     $minimum = get_config('local_video_directory' , 'minimumtimefromzoom');
                     if ($duration->h > 0 || $duration->i >= $minimum) {
