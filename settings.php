@@ -291,7 +291,7 @@ if ($hassiteconfig) {
         'local_video_directory/fieldorder',
         get_string('fieldorder', 'local_video_directory'),
         get_string('fieldorder', 'local_video_directory'),
-        'actions, thumb, id, name, usergroup, orig_filename, length, convert_status, private, streaming_url, tags',
+        'actions, thumb, id, name, orig_filename, length, convert_status, private, tags, streaming_url',
         PARAM_TEXT
     ));
 

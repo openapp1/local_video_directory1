@@ -211,7 +211,6 @@ class local_video_directory_external extends external_api {
         } else {
             $order = 0;
         }
-//print_r($order);die;
         if (isset($SESSION->video_tags) && is_array($SESSION->video_tags)) {
             $list = $SESSION->video_tags;
             $total = count(local_video_directory_get_videos_by_tags($list, 0, null, null, $search));

@@ -54,7 +54,7 @@ class zoom_task extends \core\task\scheduled_task {
             echo $user->email;
             file_put_contents( $pathlog, "\n" . "\n" . '--------------------------------- time: ' . time() . ' ---------------------------------', FILE_APPEND);
             $meetings = $api->listRecordinga($user->id);
-            file_put_contents( $pathlog, "\n" . 'list videos for user: '. $user->id . ' mail: '. $user->email, FILE_APPEND);
+    	    file_put_contents( $pathlog, "\n" . 'list videos for user: '. $user->id . ' mail: '. $user->email, FILE_APPEND);
             $owner = $orphanvideoowner;
             $owner = $DB->get_field('user', 'id', ['email' => $user->email], [IGNORE_MISSING, IGNORE_MULTIPLE]);
             if (!$owner) {
@@ -112,7 +112,7 @@ class zoom_task extends \core\task\scheduled_task {
                         $name = str_replace('/', '', $name);
 
                         if ((!in_array($name , $exsistname)) && (!in_array($oldname , $exsistname))) {
-                            $open = $api->patchmeetingrecordingssettings( $moovie->meeting_id, 1);
+                //            $open = $api->patchmeetingrecordingssettings( $moovie->meeting_id, 1);
 
                             $newvideo = new \stdClass();
                             $newvideo->orig_filename = $name;
