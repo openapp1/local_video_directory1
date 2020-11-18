@@ -26,7 +26,7 @@ class zoomapi {
     }
 
     private function make_call($url, $data = array(), $method = 'get') {
-
+        
         $url = $this->apiurl . $url;
         $method = strtolower($method);
         $curl = new curl();

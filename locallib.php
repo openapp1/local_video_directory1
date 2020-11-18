@@ -504,6 +504,47 @@ function local_video_directory_studio_action($data, $type) {
                         $origdir . "/" . $newid . ".mp4";
 
         } else if ($type == "cut") {
+            print_r($dat);
+            if ($dat->cuttype == "sides") {
+                $start = gmdate("H:i:s", $dat->secbefore);
+          	$end = gmdate("H:i:s", $dat->secafter);
+		$length = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
+
+	        $time = new DateTime($end);
+		$time2 =new DateTime($start);
+
+		$newlength = abs($time->getTimestamp()-$time2->getTimestamp());
+		$newlwngth = gmdate("H:i:s", $newlength);
+
+                $cmd[] = $ffmpeg . " -ss " . $start .  " -i " . $streamingdir . "/" . $filename .
+                    ".mp4 -to $newlength -c copy -copyts " . $origdir . "/" . $newid . ".mp4";
+            } else {
+                $start = gmdate("H:i:s", $dat->secbefore);
+                $length = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
+                $time = strtotime($length);
+                $newlength = date("H:i:s", $time - $dat->secafter);
+                $cmd[] = $ffmpeg . " -ss 00:00:00" .  " -i " . $streamingdir . $filename .
+                    ".mp4 -to $start -c copy -copyts " . $origdir . $newid . "-start.mp4";
+
+                $end = gmdate("H:i:s", $dat->secafter);
+                $length2 = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
+                $time2 = strtotime($length2);
+                $newlength2 = date("H:i:s", $time2 - $end);
+                $cmd[] = $ffmpeg . " -ss " . $end .  " -i " . $streamingdir . $filename .
+                    ".mp4 -to $newlength2 -c copy -copyts " . $origdir . $newid . "-end.mp4";
+
+                mkdir($CFG->dataroot . '/temp/');
+                $cmd[] = $ffmpeg . " -i " . $origdir . "/" . $newid .
+                        "-start.mp4 -c copy -bsf:v h264_mp4toannexb -f mpegts $CFG->dataroot/temp/tempcut1-" . $newid . ".ts";
+                $cmd[] = $ffmpeg . " -i " . $origdir . "/" . $newid .
+                        "-end.mp4 -c copy -bsf:v h264_mp4toannexb -f mpegts $CFG->dataroot/temp/tempcut2-" . $newid . ".ts";
+                $cmd[] = $ffmpeg . ' -i "concat:' . $CFG->dataroot . '/temp/tempcut1-' . $newid . '.ts|' .
+                            $CFG->dataroot . '/temp/tempcut2-' . $newid . '.ts" -c copy -bsf:a aac_adtstoasc ' .
+                            $origdir . "/" . $newid . ".mp4";
+
+
+                /*
+               else if ($type == "cut") {
             if ($dat->cuttype == "sides") {
                 $start = gmdate("H:i:s", $dat->secbefore);
                 $end = gmdate("H:i:s", $dat->secafter);
@@ -542,6 +583,9 @@ function local_video_directory_studio_action($data, $type) {
                             $origdir . "/" . $newid . ".mp4";
             }
 
+                 */
+            }
+
         } else if ($type == "merge") {
             $cmd[] = $ffmpeg . " -i " . $streamingdir . "/" . $filename . ".mp4 -i " . $dirs['multidir'] .
                 $dat->video_id_small . "_" . $dat->height . ".mp4 -map 0:0 -map " . $dat->audio . ":1" .
@@ -567,8 +611,8 @@ function local_video_directory_studio_action($data, $type) {
         unlink($origdir . "/" . $newid . ".mp4");
 
         if ($type == "cut" && $dat->cuttype != "sides") {
-            unlink($CFG->dataroot . "/temp/tempcut1.ts");
-            unlink($CFG->dataroot . "/temp/tempcut2.ts");
+            unlink($CFG->dataroot . "/temp/tempcut1-" . $newid . ".ts");
+            unlink($CFG->dataroot . "/temp/tempcut2-" . $newid . ".ts");
             unlink($origdir  . "/" . $newid . "-end.mp4");
             unlink($origdir  . "/" . $newid . "-start.mp4");
         }
