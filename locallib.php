@@ -506,9 +506,15 @@ function local_video_directory_studio_action($data, $type) {
         } else if ($type == "cut") {
             if ($dat->cuttype == "sides") {
                 $start = gmdate("H:i:s", $dat->secbefore);
+                $end = gmdate("H:i:s", $dat->secafter);
                 $length = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
-                $time = strtotime($length);
-                $newlength = date("H:i:s", $time - $dat->secafter);
+
+                $time = new DateTime($end);
+                $time2 = new DateTime($start);
+
+                $newlength = abs($time->getTimestamp() - $time2->getTimestamp());
+                $newlwngth = gmdate("H:i:s", $newlength);
+
                 $cmd[] = $ffmpeg . " -ss " . $start .  " -i " . $streamingdir . "/" . $filename .
                     ".mp4 -to $newlength -c copy -copyts " . $origdir . "/" . $newid . ".mp4";
             } else {

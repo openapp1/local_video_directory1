@@ -56,7 +56,7 @@ class restore_form extends moodleform {
         global $CFG, $DB;
 
         $id = optional_param('id', 0, PARAM_INT);
-        $restore = optional_param('restore', 0, PARAM_INT);
+        $restore = optional_param('restore', '', PARAM_INT);
 
         if ($id != 0) {
             $video = $DB->get_record('local_video_directory', array("id" => $id));
@@ -98,9 +98,13 @@ $mform = new restore_form();
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot . '/local/video_directory/list.php');
 } else if ($fromform = $mform->get_data()) {
+    // print_r($fromform); die;
     // If user want to restore, act like new upload to same id.
     $dirs = get_directories();
-    copy($dirs['converted'] . $fromform->id . "_" . $fromform->restore . ".mp4", $dirs['uploaddir'] . $fromform->id);
+    $oldver = $DB->get_record('local_video_directory_vers', array('id' => $fromform->restore));
+    copy($dirs['converted'] . $oldver->filename , $dirs['uploaddir'] . $fromform->id);
+
+    //copy($dirs['converted'] . $fromform->id . "_" . $fromform->restore . ".mp4", $dirs['uploaddir'] . $fromform->id);
     $record['id'] = $fromform->id;
     $record['convert_status'] = 1;
     $DB->update_record('local_video_directory', $record);

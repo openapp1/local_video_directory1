@@ -25,6 +25,7 @@ require_once( __DIR__ . '/../../config.php');
 require_login();
 defined('MOODLE_INTERNAL') || die();
 require_once('locallib.php');
+global $DB;
 
 $settings = get_settings();
 
@@ -66,8 +67,6 @@ $versions = $DB->get_records('local_video_directory_vers', array('file_id' => $i
 foreach ($versions as $version) {
     $version->date = strftime("%A, %d %B %Y %H:%M", $version->datecreated);
 }
-// print_r(array_values($versions));
-// print_r(get_streaming_server_url());die;
 echo $OUTPUT->render_from_template("local_video_directory/versions",
                                    array('lines' => array_values($versions),
                                          'id' => $id,
