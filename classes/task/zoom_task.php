@@ -99,7 +99,7 @@ class zoom_task extends \core\task\scheduled_task {
                         if ($owner == 0) {
                             $name = $meeting->topic .'_' . $user->email . '_' . $moovie->recording_start . '.mp4';
                         }
-                        $oldname = '';
+                        $oldname = 'null';
                         if (strlen($name) >= 100) {
                             $oldname = 'zoom_meeting_of_' .$user->email . '_at_' . $moovie->recording_start . '.mp4';
                             $oldname = str_replace(' ', '_', $oldname);
