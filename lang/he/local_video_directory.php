@@ -67,6 +67,7 @@ $string['state_4'] = 'בהמתנה להמרה';
 $string['state_5'] = 'תקלה בהמרה...';
 $string['state_6'] = 'בתהליך יצירת ריבוי רזולוציות';
 $string['state_7'] = 'מוכן כולל ריבוי רזולוציות';
+$string['state_8'] = 'בהקובץ בתהליך הורדה';
 $string['streaming_url'] = 'קישור הזרמה';
 $string['tagarea_local_video_directory'] = 'סרטונים';
 $string['tags'] = 'תגים';

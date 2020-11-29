@@ -119,6 +119,7 @@ class zoom_task extends \core\task\scheduled_task {
                             $newvideo->orig_filename = str_replace(" ", "-", $newvideo->orig_filename);
                             $newvideo->owner_id = $owner;
                             $newvideo->private = 1;
+                            $newvideo->convert_status = 8;
                             $newvideo->status = 1;
                             $newvideo->uniqid = uniqid('', true);
                             if (isset($deletionrange) && $deletionrange > 0) {
@@ -141,6 +142,11 @@ class zoom_task extends \core\task\scheduled_task {
                                 $newvideozoom->video_id = $newvideoid;
                                 $newvideozoom->video_original_name = $name;
                                 $DB->insert_record('local_video_directory_zoom',  $newvideozoom);
+                                
+                                $updatevideo = $DB->get_record('local_video_directory',  ['id' => $newvideoid]);
+                                $updatevideo->convert_status = 1;
+                                $DB->update_record('local_video_directory',  $updatevideo);
+
 
                             } else {
                                 $ch = curl_init($moovie->download_url);
@@ -169,11 +175,16 @@ class zoom_task extends \core\task\scheduled_task {
                                     $newvideozoom->video_original_name = $name;
                                     $DB->insert_record('local_video_directory_zoom',  $newvideozoom);
 
+                                    $updatevideo = get_record('local_video_directory',  ['id' => $newvideoid]);
+                                    $updatevideo->convert_status = 1;
+                                    $DB->update_record('local_video_directory',  $updatevideo);
+
                                 } else {
                                     file_put_contents( $pathlog, "\n" . 'ERROR adding new video. in meeting id: ' . $meeting->id . ' name: ' . $name . ' status: ' . $status  . " msg:" , FILE_APPEND);
                                 }
                             }
                             //$close = $api->patchmeetingrecordingssettings( $moovie->meeting_id, 0);
+
                         } else {
                             file_put_contents( $pathlog, "\n" . 'video is exsist already. video name: ' . $name , FILE_APPEND);
                         }

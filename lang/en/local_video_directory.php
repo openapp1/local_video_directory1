@@ -65,6 +65,7 @@ $string['state_4'] = 'Waiting for conversion';
 $string['state_5'] = 'Conversion failed';
 $string['state_6'] = 'Creating multi resolution';
 $string['state_7'] = 'Ready + Multi resolution';
+$string['state_8'] = 'Downloading the file';
 $string['streaming_url'] = 'Streaming URL';
 $string['tagarea_local_video_directory'] = 'Videos';
 $string['tags'] = 'Tags';
