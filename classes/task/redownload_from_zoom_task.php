@@ -69,9 +69,25 @@ class redownload_from_zoom_task extends \core\task\scheduled_task {
                 $DB->insert_record('zoom_redownload_video', $redown);
             }
 
+            // Add check that its not a new version.
+            // $sql = "SELECT *
+            // FROM mdl_local_video_directory_cut
+            // WHERE video_id = ? AND save LIKE 'version'
+            // ORDER BY id DESC
+            // LIMIT 1" ;
+            $cut = $DB->get_records('local_video_directory_cut' , ['video_id' => $video->id]);
+            $crop = $DB->get_records('local_video_directory_crop', ['video_id' => $video->id]);
+            $merge = $DB->get_records('local_video_directory_merge', ['video_id' => $video->id]);
+            $speed = $DB->get_records('local_video_directory_speed', ['video_id' => $video->id]);
+
+            if ($cut != array() || $crop != array() || $merge != array() || $speed != array()) {
+                $delme = 0;
+            }
+print_r($delme);
             if ($delme == 0) {
                 continue;
             } else {
+
                 $filename = local_video_directory_get_filename($video->id);
                 $where = array("video_id" => $video->id);
                 $multifilenames = $DB->get_records('local_video_directory_multi' , $where);
