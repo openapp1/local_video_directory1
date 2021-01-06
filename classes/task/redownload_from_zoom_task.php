@@ -1,4 +1,3 @@
-
 <?php
 // This file is part of Moodle - http://moodle.org/
 //
@@ -21,8 +20,6 @@
  * @copyright  2018 Yedidia Klein OpenApp Israel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-
 namespace local_video_directory\task;
 defined('MOODLE_INTERNAL') || die();
 require_once( __DIR__ . '/../../locallib.php');
