@@ -60,5 +60,14 @@ $tasks = array(
         'day' => '*' ,
         'dayofweek' => '*' ,
         'month' => '*'
+    ),
+    array(
+        'classname' => 'local_video_directory\task\redownload_from_zoom_task' ,
+        'blocking' => 0 ,
+        'minute' => '00' ,
+        'hour' => '1' ,
+        'day' => '*' ,
+        'dayofweek' => '*' ,
+        'month' => '*'
     )
 );

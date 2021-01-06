@@ -254,3 +254,5 @@ $string['minimumtimefromzoomdesc'] = 'Insert the minimum minutes to download moo
 $string['wgeturl'] = "Wget base url";
 $string['wgeturldesc'] = "Insert here the base url of the wget";
 $string['hlsingle_base_url'] = 'Streaming address for HLS single file';
+$string['redownload_from_zoom'] = 'Delete & Redownload error videos from zoom';
+

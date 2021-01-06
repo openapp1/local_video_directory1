@@ -257,3 +257,4 @@ $string['minimumtimefromzoomdesc'] = 'יש להכניס את מספר הדקות
 $string['wgeturldesc'] = 'אנא הזינו את הכתובת של Wegt';
 $string['wgeturl'] = 'כתובת ה - Wegt';
 $string['hlsingle_base_url'] = 'כתובת להזרמת HLS של קובץ בודד';
+$string['redownload_from_zoom'] = 'מחיקת סרטים תקולים, והורדה חוזרת מזום';
