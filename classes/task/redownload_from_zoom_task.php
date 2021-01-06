@@ -1,3 +1,4 @@
+
 <?php
 // This file is part of Moodle - http://moodle.org/
 //
@@ -69,12 +70,6 @@ class redownload_from_zoom_task extends \core\task\scheduled_task {
                 $DB->insert_record('zoom_redownload_video', $redown);
             }
 
-            // Add check that its not a new version.
-            // $sql = "SELECT *
-            // FROM mdl_local_video_directory_cut
-            // WHERE video_id = ? AND save LIKE 'version'
-            // ORDER BY id DESC
-            // LIMIT 1" ;
             $cut = $DB->get_records('local_video_directory_cut' , ['video_id' => $video->id]);
             $crop = $DB->get_records('local_video_directory_crop', ['video_id' => $video->id]);
             $merge = $DB->get_records('local_video_directory_merge', ['video_id' => $video->id]);
@@ -83,7 +78,7 @@ class redownload_from_zoom_task extends \core\task\scheduled_task {
             if ($cut != array() || $crop != array() || $merge != array() || $speed != array()) {
                 $delme = 0;
             }
-print_r($delme);
+
             if ($delme == 0) {
                 continue;
             } else {
@@ -115,20 +110,5 @@ print_r($delme);
                 echo "\n" . $name .  ' -DELETED' . "\n";
             }
         }
-
-        /*$zooms = $DB->get_records('local_video_directory_zoom', []);
-
-        foreach ($zooms as $zoom) {
-
-            $video = $DB->get_record('local_video_directory', ['id' => $zoom->video_id]);
-            if(isset($video)) {
-                $zoom->video_original_name = $video->orig_filename;
-                $DB->update_record("local_video_directory_zoom" , $zoom);
-            }
-        }*/
-        
-
-
-
     }
 }
