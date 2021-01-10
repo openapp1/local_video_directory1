@@ -35,21 +35,22 @@ class redownload_from_zoom_task extends \core\task\scheduled_task {
         $sql = " SELECT v.*, vz.video_original_name
             FROM {local_video_directory} AS v JOIN {local_video_directory_zoom} AS vz
             ON v.id = vz.video_id
-            WHERE v.convert_status = 5";
+	    WHERE v.convert_status = 5";
         $videos = $DB->get_records_sql($sql, null, $limitfrom = 0, $limitnum = 0);
 
         $dirs = get_directories();
         foreach ($videos as $video) {
 
             $delme = 0;
+	    $redown = 0;
 
-            $redown = 0;
-            $sql = "SELECT *
+	    $sql = "SELECT *
             FROM {zoom_redownload_video}
-            WHERE video_original_name LIKE '" . $video->video_original_name . "'";
-            " AND video_original_name IS NOT NULL
-             LIMIT 1";
-            $redown = $DB->get_record_sql($sql, []);
+	    WHERE video_original_name LIKE ?
+	    AND video_original_name IS NOT NULL
+            LIMIT 1";
+            $redown = $DB->get_record_sql($sql, [$video->video_original_name]);
+
             if ($redown != array()) { // Has been redownloaded in past.
                 if ($redown->counter < 5 ) { // Redownload.
 
