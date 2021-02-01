@@ -41,11 +41,11 @@ $PAGE->navbar->add(get_string('cat', 'local_video_directory'));
 class simplehtml_form extends moodleform {
     // Add elements to form.
     public function definition() {
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
 
         $mform = $this->_form; // Don't forget the underscore!
 
-        $videos = $DB->get_records('local_video_directory', array());
+        $videos = $DB->get_records('local_video_directory', ['owner_id'=> $USER->id]);
         foreach ($videos as $video) {
             $names[$video->id] = $video->orig_filename." (".$video->id.")";
         }

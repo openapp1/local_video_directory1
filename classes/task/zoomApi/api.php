@@ -141,6 +141,26 @@ class zoomapi {
     }
 
     function listUsers() {
+        $users = array();
+        $listusersarray = array();
+        $flag = 0;
+        $index = 1;
+        while ($flag != 1) {
+            $data = $this->listUsers_multy($index);
+            if (!empty($data->users)) {
+                $users = array_merge($users, $data->users);
+            } else {
+                return $users;
+            }
+            if (count($data->users) != 100 ) {
+                $flag = 1;            
+            }
+            $index += 1;
+        }
+        return $users;
+    }
+/*
+    function listUsers() {
         $numofusers = get_config('local_video_directory' , 'numofzoomusers');
         $numofusers = (ceil($numofusers / 100) + 1);
         $users = array();
@@ -158,7 +178,7 @@ class zoomapi {
         }
         return $users;
     }
-
+*/
     function listPendingUsers() {
         $listpendingusersarray = array();
         return $this->sendrequest('user/pending', $listpendingusersarray);

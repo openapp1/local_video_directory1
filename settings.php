@@ -342,13 +342,14 @@ if ($hassiteconfig) {
         'https://api.zoom.us/v2/'
     ));
 
+    /*
     $settings->add( new admin_setting_configtext(
         'local_video_directory/numofzoomusers',
         get_string('numofzoomusers', 'local_video_directory'),
         get_string('numofzoomusersdesc', 'local_video_directory'),
         '500'
     ));
-
+    */
 
     $monthes = array("current" => "current", "1" => 1 , "2" => 2, "3" => 3, "4" => 4
     , "5" => 5, "6" => 6, "7" => 7, "8" => 8, "9" => 9, "10" => 10, "11" => 11, "12" => 12);
