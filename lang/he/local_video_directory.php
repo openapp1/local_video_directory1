@@ -158,15 +158,15 @@ $string['crop'] = "חיתוך הסרט";
 $string['studio'] = "סטודיו לעריכת הסרטים";
 $string['merge'] = "איחוד שני סרטים לאחד";
 $string['cut'] = "קיצוץ הסרט";
-$string['cutsides'] = "חיתוך צדדי הסרטון";
-$string['cutmiddlepart'] = "חיתוך קטע אמצעי";
+$string['cutsides'] = "הסרת צדדי הסרטון";
+$string['cutmiddlepart'] = "הסרת קטע אמצעי";
 $string['cutfrom'] = "בחר נקודת התחלה";
 $string['cutto'] = "בחר נקודת סיום";
 $string['copyvideovalue'] = "העתק מיקום סרטון";
 $string['cuttingrange'] = "טווח החיתוך:";
 $string['cuttype'] = "סוג החיתוך";
-$string['cuttype_help'] = "חיתוך צדדי הסרט: הסרת שני החלקים החיצוניים. " . "<br>" ."
-חיתוך קטע אמצעי: הסרת החלק האמצעי וחיבור שני החלקים החיצוניים";
+$string['cuttype_help'] = " הסרת צדדי הסרט: הסרת שני החלקים החיצוניים והשארת החלק האמצעי. " . "<br>" ."
+הסרת קטע אמצעי: הסרת החלק האמצעי וחיבור שני החלקים החיצוניים";
 $string['bg_movie'] = "סרטון רקע";
 $string['small_movie'] = "סרטון קטן";
 $string['border'] = "שוליים";

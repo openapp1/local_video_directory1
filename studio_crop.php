@@ -108,8 +108,8 @@ if ($mform->is_cancelled()) {
     $now = time();
     $record = array("video_id" => $fromform->id,
                     "user_id" => $USER->id,
-                    "timecreated" => $now,
-                    "timemodified" => $now,
+                    "datecreated" => $now,
+                    "datemodified" => $now,
                     "state" => 0,
                     "save" => $fromform->save,
                     "startx" => ($_POST['StartX'] * $ratio),

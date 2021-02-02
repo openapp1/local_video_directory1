@@ -156,15 +156,15 @@ $string['crop'] = "Crop Video";
 $string['studio'] = "Video Editing Studio";
 $string['merge'] = "Merge two videos into one";
 $string['cut'] = "Cut video";
-$string['cutsides'] = "cut video sides";
-$string['cutmiddlepart'] = "cut middlepart";
+$string['cutsides'] = "remove video sides";
+$string['cutmiddlepart'] = "remove middlepart";
 $string['cutfrom'] = "choose start point";
 $string['cutto'] = "choose end point";
 $string['copyvideovalue'] = "copy video value";
 $string['cuttingrange'] = "cutting range:";
 $string['cuttype'] = "cut type";
-$string['cuttype_help'] =  "cutting video sides: removing the two outer parts" . "<br>"
- ."Cutting middle part: Removing the middle part and connecting the two outer parts";
+$string['cuttype_help'] =  "remove video sides: removing the two outer parts" . "<br>"
+ ."remove middle part: removing the middle part and connecting the two outer parts";
 $string['bg_movie'] = "Background Video";
 $string['small_movie'] = "Small Video";
 $string['border'] = "Border";
