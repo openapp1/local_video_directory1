@@ -209,6 +209,18 @@ function local_video_directory_get_hls_url($videoid) {
     return $hlsurl;
 }
 
+
+function local_video_directory_get_symlink_url($videoid) {
+    global $DB;
+    $filename = $DB->get_field('local_video_directory', 'filename', [ 'id' => $videoid ]);
+    if (substr($filename, -4) != '.mp4') {
+        $filename .= '.mp4';
+    }
+    $config = get_config('local_video_directory');
+    return $config->streaming . "/" . $filename;
+}
+
+
 // Adding icon to top.
 function local_video_directory_render_navbar_output(\renderer_base $renderer) {
     global $CFG, $USER;

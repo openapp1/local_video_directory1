@@ -163,7 +163,7 @@ if ($hassiteconfig) {
         'local_video_directory/embedoptions',
         get_string('embed', 'local_video_directory'),
         '',
-        'style="width: 99vw; height: 56vw; max-width: 1280px; max-height: 720px;" frameBorder="0" allowfullscreen="true"'
+        'style="width: 30vw; height: 17vw; max-width: 1280px; max-height: 720px;" frameBorder="0" allowfullscreen="true"'
         .' webkitallowfullscreen="true" mozallowfullscreen="true"',
          PARAM_TEXT
     ));

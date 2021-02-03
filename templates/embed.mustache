@@ -1,32 +1,40 @@
 <style>
 html, body { overflow: hidden; background-color: transparent;}
 </style>
-<video id="videostream-{{videoid}}" class="video-js vjs-default-skin" data-setup='{}' 
+<video id="videostream-{{videoid}}" class="video-js vjs-fluid" data-setup='{}' 
         controls
         poster="{{wwwroot}}/local/video_directory/poster.php?id={{videoid}}"> 
-    <track label="English" kind="subtitles" srclang="en" 
+        <track label="English" kind="subtitles" srclang="en" 
         src="{{wwwroot}}/local/video_directory/subs.php?video_id={{videoid}}" default>
 </video>
 
-<script src="{{wwwroot}}/local/video_directory/videojs/video.min.js"></script>
+  <script src="https://vjs.zencdn.net/7.8.4/video.js"></script>
+  <script src="{{wwwroot}}/local/video_directory/videojs/videojs-seek-buttons/videojs-seek-buttons.min.js"></script>
+  <script src="{{wwwroot}}/local/video_directory/videojs/videojs-contrib-quality-levels/videojs-contrib-quality-levels.min.js"></script>
+  <script src="{{wwwroot}}/local/video_directory/videojs/videojs-hls-quality-selector/videojs-hls-quality-selector.min.js"></script>
+
 {{#dash}}
     <script src="{{wwwroot}}/local/video_directory/videojs/dash.all.min.js"></script>
     <script src="{{wwwroot}}/local/video_directory/videojs/videojs-dash.min.js"></script>
 {{/dash}}
 {{#hls}}
     <script src="{{wwwroot}}/local/video_directory/videojs/videojs-contrib-hls.min.js"></script>
+    <script src="{{wwwroot}}/local/video_directory/videojs/videojs-contrib-hls/videojs-contrib-hlsjs.min.js"></script>
 {{/hls}}
 <script>
     var player = videojs("videostream-{{videoid}}",{      
                         playbackRates: [0.5, 1, 1.5, 2, 3]
                         });
+
     player.src({    src: '{{streamingurl}}',
                     {{#dash}}
-                    type: 'application/dash+xml'});
+                    type: 'application/dash+xml'
                     {{/dash}}
                     {{#hls}}
-                    type: 'application/x-mpegURL'});
+                    type: 'application/x-mpegURL'
                     {{/hls}}
+                    {{#symlink}}
+                    type: 'video/mp4'
+                    {{/symlink}}
+                    });
 </script>
-
-{{! style="position: relative !important; width: 800px !important; height: 500px !important;" }}

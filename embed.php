@@ -26,6 +26,7 @@ require_once('lib.php');
 require_once('locallib.php');
 
 $config = get_config('local_video_directory');
+$streaming = get_config('videostream', 'streaming');
 
 if (!$config->allowanonymousembed) {
     require_login();
@@ -52,14 +53,21 @@ if (is_numeric($uniqid) && (!$video)) {
     die("Error...");
 }
 
-if ($config->embedtype == "dash") {
+if ($streaming == "dash") {
     $streamingurl = local_video_directory_get_dash_url($videoid);
     $dash = 1;
     $hls = 0;
-} else if ($config->embedtype == "hls") {
+    $symlink = 0;
+} else if ($streaming == "hls") {
     $streamingurl = local_video_directory_get_hls_url($videoid);
     $dash = 0;
     $hls = 1;
+    $symlink = 0;
+} else if ($streaming == "symlink") {
+    $streamingurl = local_video_directory_get_symlink_url($videoid);
+    $dash = 0;
+    $hls = 0;
+    $symlink = 1;
 } else {
     // Should never get here.
     $nostreaming = 1;
@@ -82,6 +90,7 @@ if ($video->filename != $videoid . '.mp4') {
 }
 
 // Check for old android and give simple mp4 in that case.
+
 if (local_video_directory_check_android_version() || $nostreaming) {
     $streamingurl = get_settings()->streaming;
     echo $OUTPUT->render_from_template("local_video_directory/embed_mp4",
@@ -89,13 +98,16 @@ if (local_video_directory_check_android_version() || $nostreaming) {
             'filename' => $filename,
             'wwwroot' => $CFG->wwwroot,
             'streamingurl' => $streamingurl));
+
 } else {
     echo $OUTPUT->render_from_template("local_video_directory/embed",
                                    array(   'videoid' => $videoid,
                                             'streamingurl' => $streamingurl,
                                             'wwwroot' => $CFG->wwwroot,
                                             'dash' => $dash,
-                                            'hls' => $hls));
+                                            'hls' => $hls,
+                                            'symlink' => $symlink
+                                        ));
 }
 
 echo $OUTPUT->footer();

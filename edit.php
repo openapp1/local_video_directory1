@@ -198,7 +198,6 @@ if ($mform->is_cancelled()) {
             $DB->insert_record('local_video_directory_catvid', ['video_id' => $fromform->id, 'cat_id' => $cat]);
         }
     }
-   // print_r($fromform->deletiondate);die;
     $record = array("id" => $fromform->id,
                     "orig_filename" => $fromform->origfilename,
                     "description" => $fromform->description,
