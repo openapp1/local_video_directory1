@@ -1,6 +1,7 @@
 {{#taskscount}}
+</br>
 <div class='tasklist'>
-    <table border=1>
+    <table class="flexible generaltable generalbox" border=1>
         <tr>
             <th>{{#str}}resettask, moodle{{/str}}</th>
             <th>{{#str}}metadata, atto_media{{/str}}</th>
@@ -9,10 +10,10 @@
         </tr>
         {{#tasks}}
         <tr>
-            <th>{{task}}</th>
-            <th>{{metadata}}</th>
-            <th>{{date}}</th>
-            <th>{{state}}</th>
+            <td>{{task}}</td>
+            <td>{{metadata}}</td>
+            <td>{{date}}</td>
+            <td>{{state}}</td>
         </tr>
         {{/tasks}}
     </table>    

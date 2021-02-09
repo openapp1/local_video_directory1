@@ -256,3 +256,7 @@ $string['wgeturldesc'] = "Insert here the base url of the wget";
 $string['hlsingle_base_url'] = 'Streaming address for HLS single file';
 $string['redownload_from_zoom'] = 'Delete & Redownload error videos from zoom';
 
+$string['metadata_cut'] = 'Cut video from second {$a->secbefore} to second {$a->secafter}';
+$string['metadata_cat'] = 'Concat this video to another video with id: {$a->video_id_cat}';
+$string['metadata_crop'] = 'Crop the video. X Coordinates: ({$a->startx}, {$a->endx}), Y Coordinates: ({$a->starty}, {$a->endy})';
+$string['metadata_speed'] = 'Speeder this video: {$a->speed}%';

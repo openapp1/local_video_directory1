@@ -432,10 +432,13 @@ function local_video_directory_studio_tasks($id, $table, $metadata) {
     $datas = $DB->get_records('local_video_directory_' . $table, ['user_id' => $USER->id, 'video_id' => $id]);
     $tasks = [];
     foreach ($datas as $data) { // Startx starty endx endy.
-        $metacat = "";
+        $langdata = new stdClass();
+
         foreach ($metadata as $metdat) {
-            $metacat .= $data->$metdat . " ";
+            $langdata->$metdat = $data->$metdat;
         }
+        $metacat = get_string('metadata_' . $table, 'local_video_directory', $langdata);
+
         $tasks[] = [ 'task' => get_string($table, 'local_video_directory'),
                 'state' => get_string('textstate_' . $data->state, 'local_video_directory'),
                 'metadata' => $metacat,

@@ -258,3 +258,9 @@ $string['wgeturldesc'] = 'אנא הזינו את הכתובת של Wegt';
 $string['wgeturl'] = 'כתובת ה - Wegt';
 $string['hlsingle_base_url'] = 'כתובת להזרמת HLS של קובץ בודד';
 $string['redownload_from_zoom'] = 'מחיקת סרטים תקולים, והורדה חוזרת מזום';
+$string['metadata_cut'] = 'חיתוך הסרט משניה: {$a->secbefore} עד שניה: {$a->secafter}';
+$string['metadata_cat'] = 'הדבקת סרט זה, לסרט נוסף. מזהה הסרט השני: {$a->video_id_cat}';
+$string['metadata_crop'] = ':X חיתוך הסרט. ערכי ציר ({$a->startx}, {$a->endx}). :Y ערכי ציר  ({$a->starty}, {$a->endy})';
+$string['metadata_speed'] = 'שינוי מהירות הסרט פי {$a->speed} אחוזים';
+
+

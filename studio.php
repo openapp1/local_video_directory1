@@ -39,6 +39,9 @@ $PAGE->navbar->add(get_string('studio', 'local_video_directory'));
 $PAGE->set_pagelayout('standard');
 $PAGE->requires->css('/local/video_directory/style.css');
 
+$refresh = "<meta http-equiv='refresh' content='30'>";
+echo $refresh;
+
 $context = context_system::instance();
 if (!has_capability('local/video_directory:video', $context) && !is_video_admin($USER)) {
     die("Access Denied. You must get rights... Please see your site admin.");
@@ -48,7 +51,7 @@ $videoname = $DB->get_field('local_video_directory', 'orig_filename', ['id' => $
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('studio', 'local_video_directory') .
-                        ' - <span class="videoname">' . $videoname . '</span>');
+                        ': </br> <span class="videoname">' . $videoname . '</span>');
 
 $tools = [
         ['name' => 'crop', 'description' => get_string('crop', 'local_video_directory')] ,
