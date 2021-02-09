@@ -79,8 +79,18 @@ class upload_form extends moodleform {
                                 . " - " . get_string('id', 'local_video_directory') . " " . $id . "</h3>");
         }
 
-        $mform->addElement('checkbox', 'private', get_string('private', 'local_video_directory'));
+            // $mform->addElement('checkbox', 'private', get_string('private', 'local_video_directory'));
+            // $mform->setDefault('private', 'checked');
+        $option = array();
+        if ($settings->disableprivate == false) {
+            if (!is_video_admin($USER)) {
+                $option = ['disabled' => true];
+            }
+        }
+
+        $mform->addElement('checkbox', 'private', get_string('private', 'local_video_directory'), null, $option);
         $mform->setDefault('private', 'checked');
+        
 
         $mform->addElement('text', 'origfilename', get_string('orig_filename', 'local_video_directory'));
         $mform->setType('origfilename', PARAM_RAW);

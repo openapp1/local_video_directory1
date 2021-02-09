@@ -309,8 +309,11 @@ class local_video_directory_external extends external_api {
             }
 
             // Do not allow non owner to edit privacy and title.
-            if (($video->owner_id != $USER->id) && !is_video_admin($USER)) {
-                 $video->private = '';
+           
+            if (($settings->disableprivate == false && !is_video_admin($USER)) ||
+                ($settings->disableprivate == true && $video->owner_id != $USER->id && !is_video_admin($USER))) {
+                 $video->private = "<p style='display: none'>" . $video->private . '</p><input type="checkbox"
+                                     class="checkbox ajax_edit" disabled id="private_' . $video->id . '" ' . $checked . '>';
             } else {
                 $video->private = "<p style='display: none'>" . $video->private . '</p><input type="checkbox"
                                      class="checkbox ajax_edit" id="private_' . $video->id . '" ' . $checked . '>';
@@ -318,6 +321,7 @@ class local_video_directory_external extends external_api {
                                          . "</p><input type='text' class='hidden_input ajax_edit' id='orig_filename_" .
                 $video->id . "' value='" . htmlspecialchars($video->orig_filename, ENT_QUOTES) . "'>";
             }
+           
             $catq = "SELECT cat_name from {local_video_directory_catvid} cv
                         LEFT JOIN {local_video_directory_cats} c ON cv.cat_id = c.id
                         WHERE cv.video_id = ?";

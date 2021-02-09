@@ -263,4 +263,6 @@ $string['metadata_cat'] = 'הדבקת סרט זה, לסרט נוסף. מזהה �
 $string['metadata_crop'] = ':X חיתוך הסרט. ערכי ציר ({$a->startx}, {$a->endx}). :Y ערכי ציר  ({$a->starty}, {$a->endy})';
 $string['metadata_speed'] = 'שינוי מהירות הסרט פי {$a->speed} אחוזים';
 
+$string['disableprivate'] = 'אפשרות הפיכת סרט לציבורי';
+$string['disableprivatedesc'] = 'האם לאפשר לבעלי תפקיד בספרית הוידאו הפיכת סרט לסרט ציבורי';
 

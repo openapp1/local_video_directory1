@@ -260,3 +260,7 @@ $string['metadata_cut'] = 'Cut video from second {$a->secbefore} to second {$a->
 $string['metadata_cat'] = 'Concat this video to another video with id: {$a->video_id_cat}';
 $string['metadata_crop'] = 'Crop the video. X Coordinates: ({$a->startx}, {$a->endx}), Y Coordinates: ({$a->starty}, {$a->endy})';
 $string['metadata_speed'] = 'Speeder this video: {$a->speed}%';
+
+
+$string['disableprivate'] = 'Open the option to make a video public';
+$string['disableprivatedesc'] = "Allow video directory's users to make a video public ";
