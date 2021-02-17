@@ -14,6 +14,9 @@ class enrolteachers_task extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/local/video_directory/locallib.php');
         require_once($CFG->dirroot . '/local/video_directory/lib.php');
 
+        if (get_config('local_video_directory' , 'enrolallteachers') == '0') {
+            return;
+        } 
         $teachers = [];
 
         $roleidupdate = 3;

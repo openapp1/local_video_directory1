@@ -266,3 +266,5 @@ $string['metadata_speed'] = 'שינוי מהירות הסרט פי {$a->speed} �
 $string['disableprivate'] = 'אפשרות הפיכת סרט לציבורי';
 $string['disableprivatedesc'] = 'לבעלי תפקיד רגיל בספרית -האם לחסום את אפשרות הפיכת סרט לסרט ציבורי';
 
+$string['enrolallteachers'] = 'שיוך מרצים לתפקיד ספרית הוידאו';
+$string['enrolallteachersdesc'] = "שיוך אוטומטי של כל משתמש עם תפקיד מרצה באחד הקורסים לפקיד local_video_directory";

@@ -264,3 +264,6 @@ $string['metadata_speed'] = 'Speeder this video: {$a->speed}%';
 
 $string['disableprivate'] = 'Open the option to make a video public';
 $string['disableprivatedesc'] = "Prevent video directory's users to make a video public ";
+
+$string['enrolallteachers'] = 'Open the option to make a video public';
+$string['enrolallteachersdesc'] = "Prevent video directory's users to make a video public ";

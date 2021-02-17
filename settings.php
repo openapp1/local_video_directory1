@@ -324,6 +324,13 @@ if ($hassiteconfig) {
         '0'
     ));
 
+    $settings->add(
+        new admin_setting_configcheckbox('local_video_directory/enrolallteachers',
+        get_string('enrolallteachers', 'local_video_directory'),
+        get_string('enrolallteachersdesc', 'local_video_directory'),
+        '0'
+    ));
+
     $settings->add(new admin_setting_heading('local_video_directory',
     get_string('zoomvideosettings', 'local_video_directory'),
     get_string('zoomvideosettingsdesc', 'local_video_directory')));
