@@ -264,5 +264,5 @@ $string['metadata_crop'] = ':X חיתוך הסרט. ערכי ציר ({$a->startx
 $string['metadata_speed'] = 'שינוי מהירות הסרט פי {$a->speed} אחוזים';
 
 $string['disableprivate'] = 'אפשרות הפיכת סרט לציבורי';
-$string['disableprivatedesc'] = 'האם לאפשר לבעלי תפקיד בספרית הוידאו הפיכת סרט לסרט ציבורי';
+$string['disableprivatedesc'] = 'לבעלי תפקיד רגיל בספרית -האם לחסום את אפשרות הפיכת סרט לסרט ציבורי';
 
