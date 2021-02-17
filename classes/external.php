@@ -173,7 +173,6 @@ class local_video_directory_external extends external_api {
      * @return string
      */
     public static function videolist($data) {
-        //print_r($data);die;
         global $USER, $CFG, $DB, $OUTPUT, $SESSION;
         // Parameter validation.
         // REQUIRED.
@@ -379,8 +378,9 @@ class local_video_directory_external extends external_api {
             throw new moodle_exception('accessdenied');
         }
         $search = json_decode($data);
-        $users = $DB->get_records_select('user', "firstname LIKE ? OR lastname LIKE ?",
-            [ '%' . $search->term . '%', '%' . $search->term . '%'], 'lastname',
+        $users = $DB->get_records_select('user', "firstname LIKE ? OR lastname LIKE ? OR
+            CONCAT (firstname, ' ', lastname) LIKE ?",
+            [ '%' . $search->term . '%', '%' . $search->term . '%' , '%' . $search->term . '%'], 'lastname',
             'id, concat(firstname, " " ,lastname) as text', 0, 20);
         return json_encode(array_values($users), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }

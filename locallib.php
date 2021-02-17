@@ -339,8 +339,6 @@ function local_video_directory_get_videos($order = 0, $start = null, $length = n
     }
 
     if (is_video_admin()) {
-        //print_r("1111111111111111");
-       // print_r($DB->set_debug(1));
         $videos = $DB->get_records_sql('SELECT DISTINCT v.*, ' . $DB->sql_concat_join("' '", array("firstname", "lastname")) .
                                     ' AS name
                                     FROM {local_video_directory} v
@@ -349,9 +347,6 @@ function local_video_directory_get_videos($order = 0, $start = null, $length = n
                                     LEFT JOIN {user} u on v.owner_id = u.id
                                     LEFT JOIN {local_video_directory_catvid} c ON c.video_id = v.id' .
                                     $where . $orderby, $params, $start, $length);
-
-    //$DB->set_debug(0);die;
-
     } else {
         if (($settings->group == "institution") || ($settings->group == "department")) {
             $videos = $DB->get_records_sql('SELECT DISTINCT v.*, ' . $DB->sql_concat_join("' '", array("firstname", "lastname")) .
@@ -507,20 +502,20 @@ function local_video_directory_studio_action($data, $type) {
                         $origdir . "/" . $newid . ".mp4";
 
         } else if ($type == "cut") {
-            print_r($dat);
             if ($dat->cuttype == "sides") {
-                $start = gmdate("H:i:s", $dat->secbefore);
-          	$end = gmdate("H:i:s", $dat->secafter);
-		$length = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
+                // $start = gmdate("H:i:s", $dat->secbefore);
+                // $end = gmdate("H:i:s", $dat->secafter);
+                // $length = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
 
-	        $time = new DateTime($end);
-		$time2 =new DateTime($start);
+                // $time = new DateTime($end);
+                // $time2 = new DateTime($start);
+                // $newlength = abs($time->getTimestamp() - $time2->getTimestamp());
+                // $newlwngth = gmdate("H:i:s", $newlength);
 
-		$newlength = abs($time->getTimestamp()-$time2->getTimestamp());
-		$newlwngth = gmdate("H:i:s", $newlength);
+                $newlength = abs($dat->secbefore - $dat->secafter);
+                $cmd[] = $ffmpeg .  " -i " . $streamingdir . $filename .
+                ".mp4 -ss " . $dat->secbefore . " -t " . $newlength . " -c copy -copyts " . $origdir . "/" . $newid . ".mp4";
 
-                $cmd[] = $ffmpeg . " -ss " . $start .  " -i " . $streamingdir . "/" . $filename .
-                    ".mp4 -to $newlength -c copy -copyts " . $origdir . "/" . $newid . ".mp4";
             } else {
                 $start = gmdate("H:i:s", $dat->secbefore);
                 $length = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
@@ -544,49 +539,6 @@ function local_video_directory_studio_action($data, $type) {
                 $cmd[] = $ffmpeg . ' -i "concat:' . $CFG->dataroot . '/temp/tempcut1-' . $newid . '.ts|' .
                             $CFG->dataroot . '/temp/tempcut2-' . $newid . '.ts" -c copy -bsf:a aac_adtstoasc ' .
                             $origdir . "/" . $newid . ".mp4";
-
-
-                /*
-               else if ($type == "cut") {
-            if ($dat->cuttype == "sides") {
-                $start = gmdate("H:i:s", $dat->secbefore);
-                $end = gmdate("H:i:s", $dat->secafter);
-                $length = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
-
-                $time = new DateTime($end);
-                $time2 = new DateTime($start);
-
-                $newlength = abs($time->getTimestamp() - $time2->getTimestamp());
-                $newlwngth = gmdate("H:i:s", $newlength);
-
-                $cmd[] = $ffmpeg . " -ss " . $start .  " -i " . $streamingdir . "/" . $filename .
-                    ".mp4 -to $newlength -c copy -copyts " . $origdir . "/" . $newid . ".mp4";
-            } else {
-                $start = gmdate("H:i:s", $dat->secbefore);
-                $length = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
-                $time = strtotime($length);
-                $newlength = date("H:i:s", $time - $dat->secafter);
-                $cmd[] = $ffmpeg . " -ss 00:00:00" .  " -i " . $streamingdir . $filename .
-                    ".mp4 -to $start -c copy -copyts " . $origdir . $newid . "-start.mp4";
-
-                $end = gmdate("H:i:s", $dat->secafter);
-                $length2 = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
-                $time2 = strtotime($length2);
-                $newlength2 = date("H:i:s", $time2 - $end);
-                $cmd[] = $ffmpeg . " -ss " . $end .  " -i " . $streamingdir . $filename .
-                    ".mp4 -to $newlength2 -c copy -copyts " . $origdir . $newid . "-end.mp4";
-
-                mkdir($CFG->dataroot . '/temp/');
-                $cmd[] = $ffmpeg . " -i " . $origdir . "/" . $newid .
-                        "-start.mp4 -c copy -bsf:v h264_mp4toannexb -f mpegts $CFG->dataroot/temp/tempcut1.ts";
-                $cmd[] = $ffmpeg . " -i " . $origdir . "/" . $newid .
-                        "-end.mp4 -c copy -bsf:v h264_mp4toannexb -f mpegts $CFG->dataroot/temp/tempcut2.ts";
-                $cmd[] = $ffmpeg . ' -i "concat:' . $CFG->dataroot . '/temp/tempcut1.ts|' .
-                            $CFG->dataroot . '/temp/tempcut2.ts" -c copy -bsf:a aac_adtstoasc ' .
-                            $origdir . "/" . $newid . ".mp4";
-            }
-
-                 */
             }
 
         } else if ($type == "merge") {
@@ -610,7 +562,7 @@ function local_video_directory_studio_action($data, $type) {
             exec($cm);
         }
 
-        copy($origdir . "/" . $newid . ".mp4", $origdir . "/" . $newid);
+        copy($origdir . "/" . $newid . ".mp4", $origdir . $newid);
         unlink($origdir . "/" . $newid . ".mp4");
 
         if ($type == "cut" && $dat->cuttype != "sides") {
@@ -623,7 +575,11 @@ function local_video_directory_studio_action($data, $type) {
             unlink($CFG->dataroot . "/temp/intermediate1.ts");
             unlink($CFG->dataroot . "/temp/intermediate2.ts");
         }
-        $DB->update_record('local_video_directory_' . $type, ['id' => $dat->id, 'state' => 2]);
+        if ($type == "cut" && $dat->cuttype == "sides") {
+            $DB->update_record('local_video_directory_' . $type, ['id' => $dat->id, 'state' => 2]);
+        } else {
+            $DB->update_record('local_video_directory_' . $type, ['id' => $dat->id, 'state' => 2]);
+        }
     }
 }
 

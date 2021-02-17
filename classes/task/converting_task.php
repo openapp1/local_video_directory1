@@ -93,7 +93,7 @@ class converting_task extends \core\task\scheduled_task {
                     $audiocodecval = exec($audiocodec);
                     $firefoxbugval = exec( $firefoxbug);
                     if (strpos($videocodecval , '264') !== false && $audiocodecval == 'aac' && strpos($firefoxbugval, 'Predictive') === false) {
-                        echo "not nead to convert";
+                        echo 'not need to convert';
                         if (copy( $origdir . $video->id , $streamingdir . $video->id . ".mp4")) {
                             unlink($origdir . $video->id );
                         } else {
@@ -108,13 +108,15 @@ class converting_task extends \core\task\scheduled_task {
                         . $ffmpegsettings . ' '
                         . escapeshellarg($streamingdir . $video->id . ".mp4");
                         $exec = exec($convert);
-                        echo " converted";
+                        echo " converted!!";
+
                     }
                 } else {
                     echo "Ffprobe is not configured well, No such file : " . $ffprobe . "\n";
                 }
                 // Convert encoded file to hashed name and directory.
                 $contenthash = sha1_file($streamingdir . $video->id . ".mp4");
+
                 $hashdirectory = substr($contenthash, 0, 2);
                 if (!is_dir($streamingdir . $hashdirectory)) {
                     mkdir($streamingdir . $hashdirectory);
