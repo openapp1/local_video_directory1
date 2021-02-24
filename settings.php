@@ -331,6 +331,13 @@ if ($hassiteconfig) {
         '0'
     ));
 
+    $settings->add(
+        new admin_setting_configcheckbox('local_video_directory/streamingcheck',
+        get_string('streamingcheck', 'local_video_directory'),
+        get_string('streamingcheckdesc', 'local_video_directory'),
+        '1'
+    ));
+
     $settings->add(new admin_setting_heading('local_video_directory',
     get_string('zoomvideosettings', 'local_video_directory'),
     get_string('zoomvideosettingsdesc', 'local_video_directory')));

@@ -264,7 +264,10 @@ $string['metadata_crop'] = ':X חיתוך הסרט. ערכי ציר ({$a->startx
 $string['metadata_speed'] = 'שינוי מהירות הסרט פי {$a->speed} אחוזים';
 
 $string['disableprivate'] = 'אפשרות הפיכת סרט לציבורי';
-$string['disableprivatedesc'] = 'לבעלי תפקיד רגיל בספרית -האם לחסום את אפשרות הפיכת סרט לסרט ציבורי';
+$string['disableprivatedesc'] = 'לבעלי תפקיד רגיל בספריה -האם לחסום את אפשרות הפיכת סרט לסרט ציבורי';
 
 $string['enrolallteachers'] = 'שיוך מרצים לתפקיד ספרית הוידאו';
-$string['enrolallteachersdesc'] = "שיוך אוטומטי של כל משתמש עם תפקיד מרצה באחד הקורסים לפקיד local_video_directory";
+$string['enrolallteachersdesc'] = "שיוך אוטומטי של כל משתמש עם תפקיד מרצה באחד הקורסים לתפקיד local_video_directory";
+
+$string['streamingcheck'] = 'בדיקת הזרמה';
+$string['streamingcheckdesc'] = "בדיקת הזרמה בפונקציה check_streaming_server_url";

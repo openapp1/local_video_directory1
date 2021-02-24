@@ -87,6 +87,10 @@ function check_streaming_server_url() {
     global $DB;
     $settings = get_settings();
 
+    if (!$settings->streamingcheck) {
+        return true;
+    }
+
     $firstvideo = $DB->get_records('local_video_directory', [], '', '*', 0, 1);
 
     if ($firstvideo) {
