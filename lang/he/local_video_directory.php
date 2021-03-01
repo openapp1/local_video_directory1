@@ -271,3 +271,5 @@ $string['enrolallteachersdesc'] = "שיוך אוטומטי של כל משתמש 
 
 $string['streamingcheck'] = 'בדיקת הזרמה';
 $string['streamingcheckdesc'] = "בדיקת הזרמה בפונקציה check_streaming_server_url";
+
+$string['eventvideo_deleted'] = ' נמחק סרט בספריית הוידאו';

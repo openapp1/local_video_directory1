@@ -270,3 +270,4 @@ $string['enrolallteachersdesc'] = "Prevent video directory's users to make a vid
 
 $string['streamingcheck'] = 'Streaming check';
 $string['streamingcheckdesc'] = "streaming check in check_streaming_server_url function";
+$string['eventvideo_deleted'] = 'video deleted from video directory';

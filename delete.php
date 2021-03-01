@@ -92,6 +92,14 @@ if ($mform->is_cancelled()) {
     $multifilenames = $DB->get_records('local_video_directory_multi' , $where);
 
     $where = array("id" => $fromform->id);
+    $v = $DB->get_record('local_video_directory', $where);
+    
+    $event = \local_video_directory\event\video_deleted::create(array(
+        'objectid' => $v->id,
+        'context' => context_system::instance()
+    ));
+    $event->trigger();
+
     $deleted = $DB->delete_records('local_video_directory', $where);
 
     // Delete files by id.
