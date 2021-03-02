@@ -663,3 +663,14 @@ function local_video_directory_ip_in_range( $ip, $range ) {
     $netmaskdecimal = ~ $wildcarddecimal;
     return ( ( $ipdecimal & $netmaskdecimal ) == ( $rangedecimal & $netmaskdecimal ) );
 }
+
+function trigger_deletion_event($video) {
+    $event = \local_video_directory\event\video_deleted::create(array(
+        'objectid' => $video->id,
+        'context' => context_system::instance(),
+        'other'    => array(
+            'videoname' => $video->orig_filename,
+        )
+    ));
+    $event->trigger();
+}

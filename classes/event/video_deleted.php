@@ -37,7 +37,7 @@ class video_deleted extends \core\event\base {
     }
  
     public function get_description() {
-        return "The user with id {$this->userid} deleted video with id {$this->objectid}.";
+        return "The user with id '{$this->userid}' deleted video with id '{$this->objectid}' with name '{$this->other['videoname']}'";
     }
  
     public function get_url() {
