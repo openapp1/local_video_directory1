@@ -37,11 +37,11 @@ function srt2vtt($srt) {
     try {
         if (isset($srt)) {
             // Convert to utf.
-            $charset = mb_detect_encoding($srt, "Windows-1255, ISO-8859-8, UTF-8");
+            //array('ISO-8859-1', 'Windows-1255', 'ISO-8859-8', 'UTF-8' )
+            $charset = mb_detect_encoding($srt, 'UTF-8');
             $srt = iconv($charset, "UTF-8", $srt);
             // Break to lines.
             $subtitlelines = explode ("\n", $srt);
-
             if (empty($subtitlelines)) {
                 throw new Exception(_("Subtitle file empty"));
             }
