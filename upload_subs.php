@@ -93,16 +93,16 @@ if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot . '/local/video_directory/list.php');
 } else if ($fromform = $mform->get_data()) {
     $name = $mform->get_new_filename('userfile');
+    $dirs = get_directories();
     if (substr($name, -3) != "vtt") {
         if (substr($name, -3) == "srt") {
             include("srt2vtt.php");
-            $dirs = get_directories();
             // Save uploaded file.
             $success = $mform->save_file('userfile', $dirs['subsdir'].$fromform->id . ".srt");
             $srt = file_get_contents($dirs['subsdir'] . $fromform->id . ".srt");
             // Convert to vtt.
             $vtt = srt2vtt($srt);
-            file_put_contents($dirs['subsdir'] . local_video_directory_get_filename($fromform->id) . ".vtt", $vtt);
+            file_put_contents($dirs['subsdir'] . $fromform->id . ".vtt", $vtt);
             // Delete uploaded file.
             unlink($dirs['subsdir'].$fromform->id.".srt");
         } else {
