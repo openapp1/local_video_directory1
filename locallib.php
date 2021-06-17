@@ -87,6 +87,10 @@ function check_streaming_server_url() {
     global $DB;
     $settings = get_settings();
 
+    if (!$settings->streamingcheck) {
+        return true;
+    }
+
     $firstvideo = $DB->get_records('local_video_directory', [], '', '*', 0, 1);
 
     if ($firstvideo) {
@@ -658,4 +662,15 @@ function local_video_directory_ip_in_range( $ip, $range ) {
     $wildcarddecimal = pow( 2, ( 32 - $netmask ) ) - 1;
     $netmaskdecimal = ~ $wildcarddecimal;
     return ( ( $ipdecimal & $netmaskdecimal ) == ( $rangedecimal & $netmaskdecimal ) );
+}
+
+function trigger_deletion_event($video) {
+    $event = \local_video_directory\event\video_deleted::create(array(
+        'objectid' => $video->id,
+        'context' => context_system::instance(),
+        'other'    => array(
+            'videoname' => $video->orig_filename,
+        )
+    ));
+    $event->trigger();
 }

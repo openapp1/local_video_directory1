@@ -37,7 +37,7 @@ function srt2vtt($srt) {
     try {
         if (isset($srt)) {
             // Convert to utf.
-            //array('ISO-8859-1', 'Windows-1255', 'ISO-8859-8', 'UTF-8' )
+	      //$charset = mb_detect_encoding($srt, "Windows-1255, ISO-8859-8, UTF-8");
             $charset = mb_detect_encoding($srt, 'UTF-8');
             $srt = iconv($charset, "UTF-8", $srt);
             // Break to lines.

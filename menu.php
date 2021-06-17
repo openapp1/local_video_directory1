@@ -50,10 +50,10 @@ foreach ($menu as $item) {
                             'selected' => ($item . '.php' != $selected),
                             'str' => get_string($item, 'local_video_directory')));
 }
-
+$dir = $CFG->dataroot . '/local_video_directory_videos/converted/';
 echo $OUTPUT->render_from_template('local_video_directory/menu',
                                     ['size' => local_video_directory_human_filesize(
-                                        disk_free_space($CFG->dataroot), 2, $settings->df),
+                                        disk_free_space($dir), 2, $settings->df),
                                      'selected' => $selected,
                                      'menu' => $tabs,
                                      'admin' => is_siteadmin($USER),

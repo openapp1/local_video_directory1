@@ -39,7 +39,6 @@ $dirs = get_directories();
 if (file_exists($dirs['subsdir'] . $id . ($language ? "-" . $language : '') . ".vtt")) {
     readfile($dirs['subsdir'] . $id . ($language ? "-" . $language : '') . ".vtt");
 //    readfile($dirs['subsdir'] . local_video_directory_get_filename($id) . ($language ? "-" . $language : '') . ".vtt");
-
 } else {
     // Do we have words from google in this movie.
     $words = $DB->get_records('local_video_directory_words', ['video_id' => $id]);

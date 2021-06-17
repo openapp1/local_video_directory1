@@ -47,6 +47,8 @@ class deletion_task extends \core\task\scheduled_task {
             $multifilenames = $DB->get_records('local_video_directory_multi' , $where);
             $name = $video->orig_filename;
             $where = array("id" => $video->id);
+          
+            trigger_deletion_event($video);
             $deleted = $DB->delete_records('local_video_directory', $where);
         
             $videoconverted = $dirs['converted'] . $filename . '.mp4';
@@ -79,9 +81,5 @@ class deletion_task extends \core\task\scheduled_task {
                 $DB->update_record("local_video_directory_zoom" , $zoom);
             }
         }*/
-        
-
-
-
     }
 }

@@ -267,3 +267,7 @@ $string['disableprivatedesc'] = "Prevent video directory's users to make a video
 
 $string['enrolallteachers'] = 'Open the option to make a video public';
 $string['enrolallteachersdesc'] = "Prevent video directory's users to make a video public ";
+
+$string['streamingcheck'] = 'Streaming check';
+$string['streamingcheckdesc'] = "streaming check in check_streaming_server_url function";
+$string['eventvideo_deleted'] = 'video deleted from video directory';
