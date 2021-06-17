@@ -39,6 +39,7 @@ require_login();
 defined('MOODLE_INTERNAL') || die();
 require_once('locallib.php');
 require_once("$CFG->libdir/formslib.php");
+require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
 
 $id = optional_param('video_id', 0, PARAM_INT);
 
@@ -126,7 +127,15 @@ if ($mform->is_cancelled()) {
     $videoname = $video->orig_filename;
     echo $OUTPUT->heading(get_string('speed', 'local_video_directory') .
     ' - <span class="videoname">' . $videoname . '</span>');
-    $streaming = get_streaming_server_url() . "/" . local_video_directory_get_filename($id) . ".mp4";
+    
+    $cloudtype = get_config('local_video_directory_cloud', 'cloudtype');
+    if ($cloudtype == 'Vimeo') {
+        $streaming = get_data_vimeo($video->id)->streamingurl;
+    } else {
+        $streaming = get_streaming_server_url() . "/" . local_video_directory_get_filename($id) . ".mp4";
+    }
+
+
     echo $OUTPUT->render_from_template('local_video_directory/video_float',
     ['wwwroot' => $CFG->wwwroot,  'id' => $id,
     'thumb' => str_replace("-", "&second=", $video->thumb),

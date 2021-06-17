@@ -25,6 +25,7 @@
 namespace local_video_directory\task;
 defined('MOODLE_INTERNAL') || die();
 require_once( __DIR__ . '/../../locallib.php');
+
 class deletion_task extends \core\task\scheduled_task {
  
     public function get_name() {
@@ -33,8 +34,15 @@ class deletion_task extends \core\task\scheduled_task {
  
     public function execute() {
         
-        global $DB;
-
+        global $DB, $CFG;
+        require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
+        $cloudtype = get_config('local_video_directory_cloud', 'cloudtype');
+        $seconds = array(1, 3, 7, 12, 20, 60, 120);
+        $thumbnailseconds = get_config('local_video_directory', 'thumbnail_seconds');
+        if (is_numeric($thumbnailseconds)) {
+            $seconds[] = $thumbnailseconds;
+        }
+        
         $sql = "SELECT *
         FROM {local_video_directory} AS v
         WHERE UNIX_TIMESTAMP() >=  v.deletiondate";
@@ -45,32 +53,71 @@ class deletion_task extends \core\task\scheduled_task {
             $filename = local_video_directory_get_filename($video->id);
             $where = array("video_id" => $video->id);
             $multifilenames = $DB->get_records('local_video_directory_multi' , $where);
+            $versions = $DB->get_records('local_video_directory_vers' , array("file_id" => $video->id));
+
             $name = $video->orig_filename;
             $where = array("id" => $video->id);
-          
             trigger_deletion_event($video);
+
             $deleted = $DB->delete_records('local_video_directory', $where);
-        
-            $videoconverted = $dirs['converted'] . $filename . '.mp4';
-        
-            $samevideos = $DB->get_records('local_video_directory' , ['filename' => $filename]);
-            if (file_exists($videoconverted) && $samevideos == array()) {
-                unlink($videoconverted);
-            }
-            foreach ($multifilenames as $multi) {
-                $videomulti = $dirs['multidir'] .  $multi->filename;
-                if (file_exists($videomulti) && $samevideos == array()) {
-                    unlink($videomulti);
+
+            if ($cloudtype != 'None') {
+                // Delete files by hash, only if there is no another same video.
+                $videoconverted = $filename . '.mp4';
+                print_r($videoconverted);
+                $samevideos = $DB->get_records('local_video_directory' , ['filename' => $filename]);
+                print_r($samevideos);
+
+                if ($samevideos == array()) {
+                    delete_from_cloud($video->id, $videoconverted);
+                    if ($cloudtype != 'Vimeo') {
+                        foreach ($seconds as $second) {
+                            if ($second != $video->thumb) {
+                                $file = $filename . '-'. $second . '.png';
+                                $minifile = $filename . '-'. $second . '-mini.png';
+                                delete_from_cloud($video->id, $file);
+                                delete_from_cloud($video->id, $minifile);
+                            }
+                        }
+                    }
+                }
+            } else {
+                $videoconverted = $dirs['converted'] . $filename . '.mp4';
+                $samevideos = $DB->get_records('local_video_directory' , ['filename' => $filename]);
+                if (file_exists($videoconverted) && $samevideos == array()) {
+                    unlink($videoconverted);
+                }
+                foreach ($multifilenames as $multi) {
+                    $videomulti = $dirs['multidir'] .  $multi->filename;
+                    if (file_exists($videomulti) && $samevideos == array()) {
+                        unlink($videomulti);
+                    }
+                }
+                //Delete versions, only if there is no another same video.
+                foreach ($versions as $version) {
+                    $samevideosversion = $DB->get_records('local_video_directory_vers' , ['filename' => $version->filename]);
+                    $samevideosvideo = $DB->get_records('local_video_directory' , ['filename' => $version->filename]);
+                    $videoversion = $dirs['converted'] . $version->filename . '.mp4';
+                    
+                    if (file_exists($videoversion) && count($samevideosversion) == 1  && $samevideosvideo == array()) {
+                        unlink($videoversion);
+                    }
                 }
             }
-        
             // Delete zoom.
             $where = array('video_id' => $video->id);
             $DB->delete_records('local_video_directory_zoom', $where);
 
+            // Delete versions.
+            $where = array('file_id' => $video->id);
+            $DB->delete_records('local_video_directory_vers', $where);
+
+            // Delete tags.
+            $where = array("itemid" => $video->id, "itemtype" => 'local_video_directory');
+            $deleted = $DB->delete_records('tag_instance', $where);
+
             echo "\n" . $name .  ' -DELETED' . "\n";
         }
-        
         /*$zooms = $DB->get_records('local_video_directory_zoom', []);
         
         foreach ($zooms as $zoom) {

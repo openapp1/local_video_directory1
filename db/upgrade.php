@@ -461,5 +461,57 @@ function xmldb_local_video_directory_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021010604, 'local', 'video_directory');
     }
 
+    if ($oldversion < 2021021702) {
+        // Define table local_video_directory_vimeo to be created.
+        $table = new xmldb_table('local_video_directory_vimeo');
+
+        // Adding fields to table local_video_directory_vimeo.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('videoid', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('vimeoid', XMLDB_TYPE_CHAR, '250', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+
+        // Adding keys to table local_video_directory_vimeo.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for local_video_directory_vimeo.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        upgrade_plugin_savepoint(true, 2021021702, 'local', 'video_directory');
+    }
+
+    if ($oldversion < 2021021704) {
+        // Define table local_video_directory_vimeo to be created.
+
+        $table = new xmldb_table('local_video_directory_vimeo');
+        $field = new xmldb_field('streamingurl', XMLDB_TYPE_CHAR, '1000', null, null, null, null, 'vimeoid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_plugin_savepoint(true, 2021021704, 'local', 'video_directory');
+    }
+
+    if ($oldversion < 2021021705) {
+        // Define table local_video_directory_vimeo to be created.
+
+        $table = new xmldb_table('local_video_directory_vimeo');
+        $field = new xmldb_field('thumburl', XMLDB_TYPE_CHAR, '1000', null, null, null, null, 'streamingurl');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_plugin_savepoint(true, 2021021705, 'local', 'video_directory');
+    }
+
+    if ($oldversion < 2021021708) {
+        // Define table local_video_directory_vimeo to be created.
+
+        $table = new xmldb_table('local_video_directory_vimeo');
+        $field = new xmldb_field('streaminghls', XMLDB_TYPE_CHAR, '1000', null, null, null, null, 'streamingurl');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_plugin_savepoint(true, 2021021708, 'local', 'video_directory');
+    }
     return 1;
 }

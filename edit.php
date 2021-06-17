@@ -41,6 +41,8 @@ if (!CLI_SCRIPT) {
 }
 
 require_once("$CFG->libdir/formslib.php");
+require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
+
 $streamingurl = get_settings()->streaming;
 $id = optional_param('video_id', 0, PARAM_INT);
 
@@ -224,7 +226,17 @@ if ($mform->is_cancelled()) {
         $filename = $id;
     }
 
-    $streaming = get_streaming_server_url() . "/" . $filename . ".mp4";
+    $cloudtype = get_config('local_video_directory_cloud', 'cloudtype');
+
+    if ($cloudtype == 'Vimeo') {
+        $vimeo = get_data_vimeo($video->id);
+        $streaming = $vimeo->streamingurl;
+        $vimeoid = $vimeo->vimeoid;
+        $embedurl = 'https://player.vimeo.com/video/' . $vimeoid ;
+    } else {
+        $streaming = get_streaming_server_url() . "/" . $filename . ".mp4";
+        $embedurl = $CFG->wwwroot . '/local/video_directory/embed.php?id=' . $video->uniqid;
+    }
 
     echo $OUTPUT->render_from_template('local_video_directory/edit',
     [   'wwwroot' => $CFG->wwwroot,
@@ -237,10 +249,10 @@ if ($mform->is_cancelled()) {
     $mform->display();
 
     echo "<img src='qr.php?id=" . $id . "'>";
-    $embedurl = $CFG->wwwroot . '/local/video_directory/embed.php?id=' . $video->uniqid;
     echo '<div class="video_embed"><h2>' . get_string('embeding', 'local_video_directory') . '</h2>&lt;iframe src="' . $embedurl
             . '" ' . $settings->embedoptions . ' >&lt;/iframe><br>'
             . "<a href='$streaming'> $streaming </a> </div>";
 }
 
 echo $OUTPUT->footer();
+

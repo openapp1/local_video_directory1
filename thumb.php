@@ -25,13 +25,13 @@ require_once( __DIR__ . '/../../config.php');
 require_login();
 defined('MOODLE_INTERNAL') || die();
 require_once('locallib.php');
+require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
+
 
 $settings = get_settings();
 
 if (!CLI_SCRIPT) {
     require_login();
-
-
     // Check if user have permissionss.
     $context = context_system::instance();
 
@@ -45,7 +45,13 @@ $id = required_param('id', PARAM_INT);
 $second = optional_param('second', 0, PARAM_INT);
 $mini = optional_param('mini', 0, PARAM_INT);
 $dirs = get_directories();
-$streamingdir = $dirs['converted'];
+$cloudtype = get_config('local_video_directory_cloud', 'cloudtype');
+
+if ($cloudtype != 'None') {
+    $streamingdir = get_config('local_video_directory', 'streaming') . '/';
+} else {
+    $streamingdir = $dirs['converted'];
+}
 
 $video = $DB->get_record('local_video_directory', ['id' => $id]);
 if ($video->filename != $id . '.mp4') {
@@ -53,15 +59,46 @@ if ($video->filename != $id . '.mp4') {
 } else {
     $filename = $id;
 }
-header("Content-type: image/png");
-// Tami
-if (!file_exists($streamingdir . $filename . ($second ? "-" . $second : '') . "-mini.png")
+
+if ($cloudtype != 'None') { 
+    $second = $second ? $second : 1;
+    $mini = $mini ? $mini : 1;
+    
+    if ($cloudtype == 'Vimeo') {
+
+        header("Content-type: image/jpg");
+        $vimeo = get_data_vimeo($video->id);
+        if (isset($vimeo->thumburl)) {
+            readfile($vimeo->thumburl);
+        } else {
+            readfile($CFG->wwwroot . '/local/video_directory/pix/headphonesThumb.jpg');
+        }
+    } else {
+        header("Content-type: image/png");
+
+        if (!file_exist_cloud($video->id, $filename  ."-" .  $second . "-mini.png")
+        && !file_exist_cloud($video->id, $filename  ."-" .  $second . ".png")
+        && $video->filename && $video->convert_status == 7){
+            readfile($CFG->wwwroot . '/local/video_directory/pix/headphonesThumb.jpg');
+        }
+        if ($mini) {
+            readfile($streamingdir . $filename  ."-" .  $second .  "-mini.png");
+        } else {
+            readfile($streamingdir . $filename ."-" .  $second .  ".png");
+        }
+    }
+} else {
+    header("Content-type: image/png");
+
+    if (!file_exists($streamingdir . $filename . ($second ? "-" . $second : '') . "-mini.png")
     && !file_exists($streamingdir . $filename . ($second ? "-" . $second : '') . ".png")
     && $video->filename && $video->convert_status == 7){
-    readfile($CFG->wwwroot . '/local/video_directory/pix/headphonesThumb.jpg');
-} // >
-if ($mini) {
-    readfile($streamingdir . $filename . ($second ? "-" . $second : '') . "-mini.png");
-} else {
-    readfile($streamingdir . $filename . ($second ? "-" . $second : '') . ".png");
+        readfile($CFG->wwwroot . '/local/video_directory/pix/headphonesThumb.jpg');
+    }
+    if ($mini) {
+        readfile($streamingdir . $filename . ($second ? "-" . $second : '') . "-mini.png");
+    } else {
+        readfile($streamingdir . $filename . ($second ? "-" . $second : '') . ".png");
+    }
 }
+

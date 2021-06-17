@@ -10,7 +10,8 @@
     ],
     "type": "moodle-local",
     "require": {
-      "composer/installers": "~1.0"
+      "composer/installers": "~1.0",
+        "vimeo/vimeo-api": "^3.0"
     },
     "extra": {
       "installer-name": "video_directory"

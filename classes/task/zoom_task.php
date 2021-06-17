@@ -51,6 +51,12 @@ class zoom_task extends \core\task\scheduled_task {
         $orphanvideoowner = isset($orphanvideoowner) && $orphanvideoowner > 0 ? $orphanvideoowner : 0;
 
         foreach ($users as $user) {
+	// doenload for specific user
+/*	
+	if ($user->email != 'sari@openapp.co.il'){
+			continue;
+		}
+*/	
             echo $user->email;
             file_put_contents( $pathlog, "\n" . "\n" . '--------------------------------- time: ' . time() . ' ---------------------------------', FILE_APPEND);
             $meetings = $api->listRecordinga($user->id);

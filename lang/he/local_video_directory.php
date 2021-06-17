@@ -267,9 +267,30 @@ $string['disableprivate'] = 'אפשרות הפיכת סרט לציבורי';
 $string['disableprivatedesc'] = 'לבעלי תפקיד רגיל בספריה -האם לחסום את אפשרות הפיכת סרט לסרט ציבורי';
 
 $string['enrolallteachers'] = 'שיוך מרצים לתפקיד ספרית הוידאו';
+$string['enrolallteachersdesc'] = "שיוך אוטומטי של כל משתמש עם תפקיד מרצה באחד הקורסים לפקיד local_video_directory"; 
 $string['enrolallteachersdesc'] = "שיוך אוטומטי של כל משתמש עם תפקיד מרצה באחד הקורסים לתפקיד local_video_directory";
 
 $string['streamingcheck'] = 'בדיקת הזרמה';
-$string['streamingcheckdesc'] = "בדיקת הזרמה בפונקציה check_streaming_server_url";
+$string['streamingcheckdesc'] = "בדיקת הזרמה בפונקציה check_streaming_server_url"; 
 
 $string['eventvideo_deleted'] = ' נמחק סרט בספריית הוידאו';
+
+// Cloude.
+$string['settingscloud'] = 'הגדרות ענן';
+$string['cloudaccesskey'] = 'מפתח גישה לענן';
+$string['cloudaccesskeydesc'] = 'הכנס את המפתח גישה לענן';
+$string['cloudaccesstoken'] = 'טוקן גישה לענן';
+$string['cloudaccesstokendesc'] = 'הכנס את הטוקן עבור גישה לענן';
+$string['cloudaccesssecret'] = 'סיסמת גישה לענן';
+$string['cloudaccesssecretdesc'] = 'הכנס את סיסמת הגישה לענן';
+$string['cloudvideobucket'] = 'שם הדלי בו יאוכסנו סרטים בענן';
+$string['cloudvideobucketdesc'] = 'הכנס את שם הדלי בו יאוכסנו סרטים בענן';
+$string['cloudendpoint'] = 'קישור לענן';
+$string['cloudendpointdesc'] = 'הכנס את הקישור הראשי לענן';
+$string['cloudtype'] = 'סוג הענן';
+$string['cloudtypedesc'] = 'הכנס את סוג הענן(Azure, Google etc...)';
+$string['storagecloud'] = 'אכסון סרטים בענן';
+$string['storageclouddesc'] = 'אפשר אכסון סרטים בענן';
+$string['updatevimeoversion'] = 'להחלפת גירסה ניתן  ' . '<a href="https://tinyurl.com/sham4brj">לפנות לתמיכה</a>' . ' בצירוף הסרטון העדכני ופרטי הסרטון שיש לעדכן ';
+$string['updatevimeothumb'] = 'להחלפת צלמית הסרטון ניתן ' . '<a href="https://tinyurl.com/sham4brj">לפנות לתמיכה</a>' . ' בצירוף קובץ התמונה ופרטי הסרטון שיש לעדכן ';
+$string['vimeoupdates'] = 'עדכון וימאו';

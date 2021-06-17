@@ -11,7 +11,7 @@ global $DB;
 
 $videos = $DB->get_records('local_video_directory', ['convert_status' => '5']);
  $sql = "SELECT *
-        FROM {local_video_directory} AS v WHERE v.id > 2300";
+        FROM {local_video_directory} AS v";
 $videos =  $DB->get_records_sql($sql, []);
 
 $dirs = get_directories();

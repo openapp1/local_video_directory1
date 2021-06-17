@@ -26,6 +26,8 @@ require_once('locallib.php');
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
+require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
+
 
 $settings = get_settings();
 
@@ -44,7 +46,12 @@ if (!CLI_SCRIPT) {
 $dirs = get_directories();
 $ffmpeg = $settings->ffmpeg;
 $streamingurl = $settings->streaming.'/';
-$streamingdir = $dirs['converted'];
+$cloudtype = get_config('local_video_directory_cloud', 'cloudtype');
+if ($cloudtype != 'None') {
+    $streamingdir = get_config('local_video_directory', 'streaming') . '/';
+} else {
+    $streamingdir = $dirs['converted'];
+}
 
 $id = optional_param('id', 0, PARAM_INT);
 $seconds = array(1, 3, 7, 12, 20, 60, 120);
@@ -71,7 +78,7 @@ class thumbs_form extends moodleform {
         global $CFG, $DB, $seconds, $streamingdir, $OUTPUT;
         $mform = $this->_form;
 
-        // LOOP from array seconds...
+        // LOOP from array seconds
         $radioarray = array();
         $id = optional_param('id', 0, PARAM_INT);
         $length = $DB->get_field('local_video_directory', 'length', array('id' => $id));
@@ -119,7 +126,9 @@ if ($mform->is_cancelled()) {
     }
 
     // Generate the big thumb and rename the small one.
-    rename($streamingdir . $filename . "-" . $fromform->thumb . ".png", $streamingdir . $filename . "-" . $fromform->thumb . "-mini.png");
+    if ($cloudtype == 'None') {
+        rename($streamingdir . $filename . "-" . $fromform->thumb . ".png", $streamingdir . $filename . "-" . $fromform->thumb . "-mini.png");
+    }
     $timing = gmdate("H:i:s", $fromform->thumb );
     // Check that $ffmpeg is a file.
     if (file_exists($ffmpeg)) {
@@ -127,24 +136,22 @@ if ($mform->is_cancelled()) {
             . " -vframes 1 " . escapeshellarg($streamingdir . $filename . "-" . $fromform->thumb . ".png") . " -y";
         $output = exec($thumb);
     }
-    // Delete all other thumbs...
+    // Delete all other thumbs
     foreach ($seconds as $second) {
         if ($second != $fromform->thumb) {
-            $file = $dirs['converted'] . $filename . "-" . $second . '.png';
+            $file = $streamingdir . $filename . "-" . $second . '.png';
 
             if (file_exists($file)) {
                 unlink($file);
             }
         }
     }
-
     // Delete orig thumb.
-    $file = $dirs['converted'] . $filename . '.png';
+    $file = $streamingdir . $filename . '.png';
 
     if (file_exists($file)) {
         unlink($file);
     }
-
     redirect($CFG->wwwroot . '/local/video_directory/list.php');
 } else {
     echo $OUTPUT->header();

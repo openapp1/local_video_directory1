@@ -24,6 +24,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . "/externallib.php");
+
 /**
  * Main class for external API.
  * @copyright  2018 Yedidia Klein OpenApp Israel
@@ -103,7 +104,11 @@ class local_video_directory_external extends external_api {
      * @return string
      */
     public static function thumb($videoid, $seconds) {
+
         global $CFG, $DB;
+        require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
+        require_once(__DIR__ . '/../locallib.php');
+
         // Parameter validation.
         // REQUIRED.
         $params = self::validate_parameters(self::thumb_parameters(),
@@ -116,13 +121,18 @@ class local_video_directory_external extends external_api {
             throw new moodle_exception('accessdenied');
         }
 
-        require_once(__DIR__ . '/../locallib.php');
         $settings = get_settings();
 
         $ffmpeg = $settings->ffmpeg;
         $id = $videoid;
         $dirs = get_directories();
-        $streamingdir = $dirs['converted'];
+        $cloudtype = get_config('local_video_directory_cloud', 'cloudtype');
+
+        if ($cloudtype != 'None') {
+            $streamingdir = get_config('local_video_directory', 'streaming') . '/';
+        } else {
+            $streamingdir = $dirs['converted'];
+        }
 
         $video = $DB->get_record('local_video_directory', ['id' => $id]);
         if ($video->filename != $id . '.mp4') {
@@ -144,7 +154,16 @@ class local_video_directory_external extends external_api {
                 . escapeshellarg($streamingdir . $filename . "-" . $seconds . ".png");
             $output = exec( $thumb );
         }
-        if (file_exists($streamingdir . $filename . "-" . $seconds . ".png")) {
+        //TODOOOO
+        if ($cloudtype != 'None') {
+            $exist = file_exist_cloud($video->id, $filename ."-" . $seconds . ".png");
+            if (isset($exist)) {
+                return $CFG->wwwroot . '/local/video_directory/thumb.php?id=' . $id . "&second=" . $seconds;
+            }else {
+                return 'noimage';
+            }
+        }
+        else if (file_exists($streamingdir . $filename . "-" . $seconds . ".png")) {
             return $CFG->wwwroot . '/local/video_directory/thumb.php?id=' . $id . "&second=" . $seconds;
         } else {
             return 'noimage';
@@ -186,10 +205,11 @@ class local_video_directory_external extends external_api {
             throw new moodle_exception('accessdenied');
         }
         require_once(__DIR__ . '/../locallib.php');
+        require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
 
         $settings = get_settings();
         $dirs = get_directories();
-
+        $cloudtype = get_config('local_video_directory_cloud', 'cloudtype');
         $videodata = json_decode($data);
 
         if ($videodata->search->value != "") {
@@ -249,11 +269,27 @@ class local_video_directory_external extends external_api {
             $versions = $DB->get_records('local_video_directory_vers', array('file_id' => $video->id));
             $texts = $DB->get_records('local_video_directory_txtq', array('video_id' => $video->id, 'state' => 2));
 
-            if ((!file_exists( $dirs['converted'] . $video->filename . ".mp4"))
+            if ($cloudtype != 'None') {
+                //print_r($cloudtype);
+                if ($cloudtype == 'Vimeo') {
+                    if(!isset(get_data_vimeo($video->id)->streamingurl)) {
+                        $video->convert_status = get_string('state_2', 'local_video_directory');
+                    }
+                } else {
+                    if (!file_exist_cloud($video->id, local_video_directory_get_filename($video->id) . ".mp4")) {
+                        $video->convert_status = get_string('state_2', 'local_video_directory');
+                    }
+                }
+            } 
+            else {
+                //TODOO
+                //$res = file_exist_cloud($video->id, local_video_directory_get_filename($video->id) . ".mp4");
+                if ((!file_exists( $dirs['converted'] . $video->filename . ".mp4"))
                 && (!file_exists( $dirs['converted'] . $video->filename))) {
-                $video->convert_status .= '<br>' . get_string('awaitingconversion', 'local_video_directory');
+                    $video->convert_status .= '<br>' . get_string('awaitingconversion', 'local_video_directory');
+                }
             }
-
+            
             $video->thumb = local_video_get_thumbnail_url($video->thumb, $video->id);
 
             if (($video->owner_id != $USER->id) && !is_video_admin($USER)) {
@@ -275,6 +311,11 @@ class local_video_directory_external extends external_api {
                 }
                 if (!$texts) {
                     $templateparams['notext'] = 1;
+                } 
+                // TODOOO
+                if ($cloudtype == 'Vimeo') {
+                    $templateparams['thumb'] = 1;
+                    $templateparams['version'] = 1;
                 }
                 $video->actions = $OUTPUT->render_from_template('local_video_directory/list_actions', $templateparams);
             }

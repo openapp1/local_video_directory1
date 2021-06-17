@@ -86,7 +86,7 @@ function get_streaming_server_url() {
 function check_streaming_server_url() {
     global $DB;
     $settings = get_settings();
-
+    
     if (!$settings->streamingcheck) {
         return true;
     }
@@ -377,18 +377,38 @@ function local_video_directory_get_videos($order = 0, $start = null, $length = n
 }
 
 function local_video_get_thumbnail_url($thumb, $videoid, $clean=0) {
+
     global $CFG, $DB;
+
+    require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
+
     $dirs = get_directories();
     $thumb = str_replace(".png", "-mini.png", $thumb);
+    $cloudtype = get_config('local_video_directory_cloud', 'cloudtype');
 
     $thumbdata = explode('-', $thumb);
     $thumbid = $thumbdata[0];
     $thumbseconds = isset($thumbdata[1]) ? "&second=$thumbdata[1]" : '';
 
-    $video = $DB->get_record('local_video_directory', ['id' => $videoid]);
 
-    if ((file_exists( $dirs['converted'] . $videoid . ".mp4"))
-        || (file_exists( $dirs['converted'] . $video->filename . ".mp4"))) {
+    $video = $DB->get_record('local_video_directory', ['id' => $videoid]);
+    if ($cloudtype == 'None') {
+        $streamingdir = $dirs['converted'];
+    } else {
+        $streamingdir = get_config('local_video_directory', 'streaming');
+    }
+    
+    if ($cloudtype == 'Vimeo') {
+        $vimeo = get_data_vimeo($video->id);
+        if (isset($vimeo->streamingurl)) {
+            $playbutton = ' data-video-url="' .$vimeo->streamingurl . '" data-video-type="application/x-mpegURL"  data-id="' . $videoid . '"';
+        } else {
+            //readfile($CFG->wwwroot . '/local/video_directory/pix/headphonesThumb.jpg');
+        }
+    } 
+    //TODOOO
+    else if ((file_exists( $streamingdir . $videoid . ".mp4"))
+        || (file_exists( $streamingdir . $video->filename . ".mp4"))) {
         $alt = 'title="' . get_string('play', 'local_video_directory') . '"
             alt="' . get_string('play', 'local_video_directory') . '"';
         if (get_streaming_server_url()) {
@@ -406,7 +426,7 @@ function local_video_get_thumbnail_url($thumb, $videoid, $clean=0) {
     } else {
         $playbutton = '';
     }
-
+    //print_r('-------- ---------' . $playbutton);die;
     $thumb = "<div class='video-thumbnail' " . $playbutton . ">" .
               ($thumb ? "<img src='$CFG->wwwroot/local/video_directory/thumb.php?id=$thumbid$thumbseconds&mini=1 '
         class='thumb' " . $playbutton ." >" : get_string('noimage', 'local_video_directory')) . "</div>";
@@ -414,7 +434,6 @@ function local_video_get_thumbnail_url($thumb, $videoid, $clean=0) {
     if ($clean) {
         $thumb = "$CFG->wwwroot/local/video_directory/thumb.php?id=$thumbid$thumbseconds";
     }
-
     return $thumb;
 }
 
@@ -447,7 +466,7 @@ function local_video_directory_studio_tasks($id, $table, $metadata) {
     return $tasks;
 }
 
-function local_video_directory_studio_action($data, $type) {
+function local_video_directory_studio_action_local($data, $type) {
     global $DB, $CFG;
     $dirs = get_directories();
     $settings = get_settings();
@@ -578,6 +597,164 @@ function local_video_directory_studio_action($data, $type) {
         if ($type == "cat") {
             unlink($CFG->dataroot . "/temp/intermediate1.ts");
             unlink($CFG->dataroot . "/temp/intermediate2.ts");
+        }
+        if ($type == "cut" && $dat->cuttype == "sides") {
+            $DB->update_record('local_video_directory_' . $type, ['id' => $dat->id, 'state' => 2]);
+        } else {
+            $DB->update_record('local_video_directory_' . $type, ['id' => $dat->id, 'state' => 2]);
+        }
+    }
+}
+
+function local_video_directory_studio_action_cloud($data, $type) {
+    global $DB, $CFG;
+    require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
+
+    $dirs = get_directories();
+    $settings = get_settings();
+    $ffmpeg = $settings->ffmpeg;
+    $origdir = $dirs['uploaddir'];
+    $streamingdir = $dirs['converted'];
+    $cloudobj = get_cloudobj();
+    $bucket = get_config('local_video_directory_cloud' , 'videobucket');
+
+    foreach ($data as $dat) {
+        // First of all set state to 1.
+        $DB->update_record('local_video_directory_' . $type, ['id' => $dat->id, 'state' => 1]);
+        $filename = local_video_directory_get_filename($dat->video_id);
+        $outputpath = $CFG->dataroot . '/local_video_directory_videos/converted' . '/' . $filename . '.mp4';
+        download($dat->video_id, $filename . '.mp4', $outputpath);
+        
+        if ($type == "crop") {
+            if ($dat->startx < $dat->endx) {
+                $startx = $dat->startx;
+            } else {
+                $startx = $dat->endx;
+            }
+
+            if ($dat->starty < $dat->endy) {
+                $starty = $dat->starty;
+            } else {
+                $starty = $dat->endy;
+            }
+
+            $width = abs($dat->endx - $dat->startx);
+            $height = abs($dat->endy - $dat->starty);
+        }
+
+        if ($dat->save == "new") {
+            $name = $DB->get_field('local_video_directory', 'orig_filename', ['id' => $dat->video_id]);
+            if ($type == "cat") {
+                $name .= ' + ' . $DB->get_field('local_video_directory', 'orig_filename', ['id' => $dat->video_id_cat]);
+            }
+            $record = array('orig_filename' => $type . ' ' . $name,
+                    'owner_id' => $dat->user_id,
+                    'private' => 1,
+                    'uniqid' => uniqid('', true));
+            $newid = $DB->insert_record('local_video_directory' , $record);
+        } else { // Version.
+            $record = array('id' => $dat->video_id,
+                        'convert_status' => 1);
+            $DB->update_record('local_video_directory' , $record);
+            $newid = $dat->video_id;
+        }
+        if ($type == "crop") {
+            $cmd[] = $ffmpeg . " -i " . $streamingdir . "/" . $filename .
+                ".mp4 -filter:v \"crop=$width:$height:$startx:$starty\" " . $origdir . "/" . $newid . ".mp4";
+        } else if ($type == "cat") {
+            
+            $filename2 = local_video_directory_get_filename($dat->video_id_cat);
+            $outputpath2 = $CFG->dataroot . '/local_video_directory_videos/converted' . '/' . $filename2 . '.mp4';
+            download($dat->video_id_cat, $filename2 . '.mp4', $outputpath2);
+            
+            if (!is_dir($CFG->dataroot . '/temp/')) {
+                mkdir($CFG->dataroot . '/temp/');
+            }
+            $cmd[] = $ffmpeg . " -i " . $streamingdir . "/" . $filename .
+                ".mp4 -c copy -bsf:v h264_mp4toannexb -f mpegts $CFG->dataroot/temp/intermediate1.ts";
+            $cmd[] = $ffmpeg . " -i " . $streamingdir . "/" . $filename2 .
+                ".mp4 -c copy -bsf:v h264_mp4toannexb -f mpegts $CFG->dataroot/temp/intermediate2.ts";
+            $cmd[] = $ffmpeg . ' -i "concat:' . $CFG->dataroot . '/temp/intermediate1.ts|' .
+                        $CFG->dataroot . '/temp/intermediate2.ts" -c copy -bsf:a aac_adtstoasc ' .
+                        $origdir . "/" . $newid . ".mp4";
+
+        } else if ($type == "cut") {
+            if ($dat->cuttype == "sides") {
+                // $start = gmdate("H:i:s", $dat->secbefore);
+                // $end = gmdate("H:i:s", $dat->secafter);
+                // $length = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
+
+                // $time = new DateTime($end);
+                // $time2 = new DateTime($start);
+                // $newlength = abs($time->getTimestamp() - $time2->getTimestamp());
+                // $newlwngth = gmdate("H:i:s", $newlength);
+
+                $newlength = abs($dat->secbefore - $dat->secafter);
+                $cmd[] = $ffmpeg .  " -i " . $streamingdir . $filename .
+                ".mp4 -ss " . $dat->secbefore . " -t " . $newlength . " -c copy -copyts " . $origdir . "/" . $newid . ".mp4";
+
+            } else {
+                $start = gmdate("H:i:s", $dat->secbefore);
+                $length = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
+                $time = strtotime($length);
+                $newlength = date("H:i:s", $time - $dat->secafter);
+                $cmd[] = $ffmpeg . " -ss 00:00:00" .  " -i " . $streamingdir . $filename .
+                    ".mp4 -to $start -c copy -copyts " . $origdir . $newid . "-start.mp4";
+
+                $end = gmdate("H:i:s", $dat->secafter);
+                $length2 = $DB->get_field('local_video_directory', 'length', ['id' => $dat->video_id]);
+                $time2 = strtotime($length2);
+                $newlength2 = date("H:i:s", $time2 - $end);
+                $cmd[] = $ffmpeg . " -ss " . $end .  " -i " . $streamingdir . $filename .
+                    ".mp4 -to $newlength2 -c copy -copyts " . $origdir . $newid . "-end.mp4";
+
+                mkdir($CFG->dataroot . '/temp/');
+                $cmd[] = $ffmpeg . " -i " . $origdir . "/" . $newid .
+                        "-start.mp4 -c copy -bsf:v h264_mp4toannexb -f mpegts $CFG->dataroot/temp/tempcut1-" . $newid . ".ts";
+                $cmd[] = $ffmpeg . " -i " . $origdir . "/" . $newid .
+                        "-end.mp4 -c copy -bsf:v h264_mp4toannexb -f mpegts $CFG->dataroot/temp/tempcut2-" . $newid . ".ts";
+                $cmd[] = $ffmpeg . ' -i "concat:' . $CFG->dataroot . '/temp/tempcut1-' . $newid . '.ts|' .
+                            $CFG->dataroot . '/temp/tempcut2-' . $newid . '.ts" -c copy -bsf:a aac_adtstoasc ' .
+                            $origdir . "/" . $newid . ".mp4";
+            }
+
+        } else if ($type == "merge") {
+            $cmd[] = $ffmpeg . " -i " . $streamingdir . "/" . $filename . ".mp4 -i " . $dirs['multidir'] .
+                $dat->video_id_small . "_" . $dat->height . ".mp4 -map 0:0 -map " . $dat->audio . ":1" .
+                ' -strict -2 -vf "movie='.
+                $dirs['multidir'] . local_video_directory_get_filename($dat->video_id_small) . "_" . $dat->height . ".mp4" .
+                '[inner]; [in][inner] overlay=' . $dat->border . ':' . $dat->border . '[out]" ' .
+                $origdir . "/" . $newid . ".mp4";
+        } else if ($type == "speed") {
+            $double = ($dat->speed / 100);
+            $half = 1 / $double;
+            $cmd[] = $ffmpeg . " -i " . $streamingdir . "/" . $filename .
+            '.mp4 -filter_complex "[0:v]setpts=' . $half . '*PTS[v];[0:a]atempo=' . $double . '[a]" -map "[v]" -map "[a]" ' .
+            $origdir . "/" . $newid . ".mp4";
+        }
+
+
+        foreach ($cmd as $cm) {
+            echo "[local_video_directory] CMD: $cm";
+            echo "\n";
+            exec($cm);
+        }
+
+        copy($origdir . "/" . $newid . ".mp4", $origdir . $newid);
+        unlink($origdir . "/" . $newid . ".mp4");
+
+        unlink($outputpath);
+
+        if ($type == "cut" && $dat->cuttype != "sides") {
+            unlink($CFG->dataroot . "/temp/tempcut1-" . $newid . ".ts");
+            unlink($CFG->dataroot . "/temp/tempcut2-" . $newid . ".ts");
+            unlink($origdir  . "/" . $newid . "-end.mp4");
+            unlink($origdir  . "/" . $newid . "-start.mp4");
+        }
+        if ($type == "cat") {
+            unlink($CFG->dataroot . "/temp/intermediate1.ts");
+            unlink($CFG->dataroot . "/temp/intermediate2.ts");
+            unlink($outputpath2);
         }
         if ($type == "cut" && $dat->cuttype == "sides") {
             $DB->update_record('local_video_directory_' . $type, ['id' => $dat->id, 'state' => 2]);

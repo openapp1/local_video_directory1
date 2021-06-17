@@ -267,7 +267,28 @@ $string['disableprivatedesc'] = "Prevent video directory's users to make a video
 
 $string['enrolallteachers'] = 'Open the option to make a video public';
 $string['enrolallteachersdesc'] = "Prevent video directory's users to make a video public ";
-
 $string['streamingcheck'] = 'Streaming check';
 $string['streamingcheckdesc'] = "streaming check in check_streaming_server_url function";
 $string['eventvideo_deleted'] = 'video deleted from video directory';
+
+// Cloud.
+$string['settingscloud'] = 'Cloud Settings';
+$string['cloudaccesskey'] = 'Cloud access key';
+$string['cloudaccesstoken'] = 'Cloud access token';
+$string['cloudaccesstokendesc'] = 'Insert the cloud access token';
+$string['cloudaccesskeydesc'] = 'Insert the cloud access key';
+$string['cloudaccesssecret'] = 'Cloud secret key';
+$string['cloudaccesssecretdesc'] = 'Insert the cloud secret key';
+$string['cloudvideobucket'] = 'Cloud video bucket';
+$string['cloudvideobucketdesc'] = 'Insert the cloud video bucket';
+$string['cloudendpoint'] = 'Cloud Link';
+$string['cloudendpointdesc'] = 'Insert the cloud main link';
+$string['cloudtype'] = 'Cloud Name';
+$string['cloudtypedesc'] = 'Insert your Cloud Name (Azure, Google etc...)';
+$string['storagecloud'] = 'Cloud storage';
+$string['storageclouddesc'] = 'Enable storage videos to cloud';
+$string['updatevimeoversion'] = 'To replace version  ' . '<a href="https://tinyurl.com/sham4brj">you can contact support</a>' . ' Attached is the latest video and video details to be updated';
+$string['updatevimeothumb'] = 'To replace the video icon ' . '<a href="https://tinyurl.com/sham4brj">you can contact support</a>' . ' attaching the image file and the video details that need to be updated ';
+$string['vimeoupdates'] = 'vimeo updates';
+
+

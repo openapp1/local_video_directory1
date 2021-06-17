@@ -26,6 +26,7 @@ require_login();
 defined('MOODLE_INTERNAL') || die();
 require_once('locallib.php');
 require_once("$CFG->libdir/formslib.php");
+require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
 
 $id = optional_param('video_id', 0, PARAM_INT);
 
@@ -150,7 +151,11 @@ if ($mform->is_cancelled()) {
 
     $width = 640;
     $height = $width / ($video->width / $video->height);
-    if ($streaming = get_streaming_server_url()) {
+    $cloudtype = get_config('local_video_directory_cloud', 'cloudtype');
+
+    if ($cloudtype == 'Vimeo') {
+        $url = get_data_vimeo($video->id)->streamingurl;
+    } else if ($streaming = get_streaming_server_url()) {
         $url = $streaming . "/" . local_video_directory_get_filename($id) . ".mp4";
     } else {
         $url = $CFG->wwwroot . "/local/video_directory/play.php?video_id=" . $id;

@@ -182,7 +182,6 @@ echo $OUTPUT->render_from_template('local_video_directory/list',
  'showcatscloud' => $settings->catscloud, 'categories' => array_values($cats),
  'existselectedcats' => count($SESSION->categories), 'selectedcats' => array_values($selectedcats),
  'tags' => $tags, 'order' => $order,
- 'nosearch' => 1
- ]);
+ 'nosearch' => 1 ]);
 echo $OUTPUT->render_from_template('local_video_directory/player', []);
 echo $OUTPUT->footer();

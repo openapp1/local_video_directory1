@@ -56,20 +56,21 @@ if ($CFG->branch < 33) {
     $PAGE->requires->css('/local/video_directory/font_awesome/css/all.min.css');
 }
 
-
 echo $OUTPUT->header();
-
-// Menu.
 require('menu.php');
 
 $versions = $DB->get_records('local_video_directory_vers', array('file_id' => $id));
+$streaming = get_streaming_server_url();
+
 
 foreach ($versions as $version) {
     $version->date = strftime("%A, %d %B %Y %H:%M", $version->datecreated);
 }
+
 echo $OUTPUT->render_from_template("local_video_directory/versions",
-                                   array('lines' => array_values($versions),
-                                         'id' => $id,
-                                         'streaming' => get_streaming_server_url()));
+array('lines' => array_values($versions),
+      'id' => $id,
+      'streaming' => $streaming,
+     ));
 echo $OUTPUT->render_from_template('local_video_directory/player', []);
 echo $OUTPUT->footer();

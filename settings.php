@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
+
     $settings = new admin_settingpage( 'local_video_directory', get_string('settings', 'local_video_directory') );
     $iswin = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 
@@ -418,8 +419,71 @@ if ($hassiteconfig) {
     // Create.
     $ADMIN->add( 'localplugins', $settings );
 
-     $ADMIN->add('server', new admin_externalpage('local_video_directory_list',
+    $ADMIN->add('server', new admin_externalpage('local_video_directory_list',
         get_string('pluginname', 'local_video_directory'),
         new moodle_url('/local/video_directory/')));
+
+
+    // Cloud settings.
+    $cloudsettings = new admin_settingpage( 'local_video_directory_cloud', get_string('settingscloud', 'local_video_directory') );
+
+    /*
+    $cloudsettings->add( new admin_setting_configcheckbox(
+        'local_video_directory_cloud/storagecloud',
+        get_string('storagecloud', 'local_video_directory'),
+        get_string('storageclouddesc', 'local_video_directory'),
+        '0'
+    ));
+    */
+
+    $cloudsettings->add( new admin_setting_configselect(
+        'local_video_directory_cloud/cloudtype',
+        get_string('cloudtype', 'local_video_directory'),
+        get_string('cloudtypedesc', 'local_video_directory'),
+        '',
+        array("None" => "None", "Azure" => "Azure", "Vimeo" => "Vimeo")
+    ));
+
+    $cloudsettings->add( new admin_setting_configtext(
+        'local_video_directory_cloud/accesskey',
+        get_string('cloudaccesskey', 'local_video_directory'),
+        get_string('cloudaccesskeydesc', 'local_video_directory'),
+        '0'
+    ));
+    $cloudsettings->add( new admin_setting_configtext(
+        'local_video_directory_cloud/accesssecret',
+        get_string('cloudaccesssecret', 'local_video_directory'),
+        get_string('cloudaccesssecretdesc', 'local_video_directory'),
+        '0'
+    ));
+    $cloudsettings->add( new admin_setting_configtext(
+        'local_video_directory_cloud/accesstoken',
+        get_string('cloudaccesstoken', 'local_video_directory'),
+        get_string('cloudaccesstokendesc', 'local_video_directory'),
+        '0'
+    ));
+    $cloudsettings->add( new admin_setting_configtext(
+        'local_video_directory_cloud/endpoint',
+        get_string('cloudendpoint', 'local_video_directory'),
+        get_string('cloudendpointdesc', 'local_video_directory'),
+        '0'
+    ));
+    $cloudsettings->add( new admin_setting_configtext(
+        'local_video_directory_cloud/videobucket',
+        get_string('cloudvideobucket', 'local_video_directory'),
+        get_string('cloudvideobucketdesc', 'local_video_directory'),
+        '0'
+    ));
+
+    // $cloudsettings->add( new admin_setting_configtext(
+    //     'local_video_directory_cloud/cloudetype',
+    //     get_string('cloudetype', 'local_video_directory'),
+    //     get_string('cloudetypedesc', 'local_video_directory'),
+    //     '0'
+    // ));
+    $ADMIN->add( 'localplugins', $cloudsettings );
+
+
+
 
 }

@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once('locallib.php');
 
 require_once("$CFG->libdir/formslib.php");
+require_once($CFG->dirroot . '/local/video_directory/cloud/locallib.php');
+
 $settings = get_settings();
 
 if (!CLI_SCRIPT) {
@@ -98,14 +100,27 @@ $mform = new restore_form();
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot . '/local/video_directory/list.php');
 } else if ($fromform = $mform->get_data()) {
-    // print_r($fromform); die;
+   
+    $videoid = $fromform->id;
     // If user want to restore, act like new upload to same id.
     $dirs = get_directories();
     $oldver = $DB->get_record('local_video_directory_vers', array('id' => $fromform->restore));
-    copy($dirs['converted'] . $oldver->filename , $dirs['uploaddir'] . $fromform->id);
+    $cloudtype = get_config('local_video_directory_cloud', 'cloudtype');
 
-    //copy($dirs['converted'] . $fromform->id . "_" . $fromform->restore . ".mp4", $dirs['uploaddir'] . $fromform->id);
-    $record['id'] = $fromform->id;
+    if ($cloudtype != 'None') {
+        $streamingurl = get_config('local_video_directory', 'streaming') . '/' . $oldver->filename;
+    } else {
+        $streamingurl = $dirs['converted'] . $oldver->filename;
+    }
+
+    if (strpos($oldver->filename, '.mp4') === false) { 
+        copy($streamingurl . '.mp4', $dirs['uploaddir'] . $videoid);
+    } else {
+        copy($streamingurl , $dirs['uploaddir'] . $videoid);
+    }
+   
+
+    $record['id'] = $videoid;
     $record['convert_status'] = 1;
     $DB->update_record('local_video_directory', $record);
 
