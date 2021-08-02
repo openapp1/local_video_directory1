@@ -102,6 +102,7 @@ function get_cloudobj() {
     $accesssecret = get_config('local_video_directory_cloud' , 'accesssecret');
     $endpoint = get_config('local_video_directory_cloud' , 'endpoint');
     $cloudtype = get_config('local_video_directory_cloud' , 'cloudtype');
+    $region = get_config('local_video_directory_cloud' , 'region');
     
     if ($accesskey == '0') {
         echo 'No cloud has been set';
@@ -120,7 +121,7 @@ function get_cloudobj() {
                 $s3 = new S3Client([
                     'endpoint' => $endpoint,
                     //'debug' => true,
-                    'region' => 'eu-central-1',
+                    'region' => $region,
                     'version' => 'latest',
                     'use_path_style_endpoint' => true,
                     'credentials' => $credentials
