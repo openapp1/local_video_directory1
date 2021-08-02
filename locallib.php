@@ -406,6 +406,10 @@ function local_video_get_thumbnail_url($thumb, $videoid, $clean=0) {
             //readfile($CFG->wwwroot . '/local/video_directory/pix/headphonesThumb.jpg');
         }
     } 
+    if ($cloudtype == 'Azure') {
+        $playbutton = ' data-video-url="' . htmlspecialchars(get_streaming_server_url()) . "/" .
+                $video->filename . '.mp4" data-id="' . $videoid . '"';
+    }
     //TODOOO
     else if ((file_exists( $streamingdir . $videoid . ".mp4"))
         || (file_exists( $streamingdir . $video->filename . ".mp4"))) {
