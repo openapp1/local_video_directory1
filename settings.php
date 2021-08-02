@@ -474,7 +474,13 @@ if ($hassiteconfig) {
         get_string('cloudvideobucketdesc', 'local_video_directory'),
         '0'
     ));
-
+    
+    $cloudsettings->add( new admin_setting_configtext(
+        'local_video_directory_cloud/region',
+        get_string('cloudregion', 'local_video_directory'),
+        get_string('cloudregiondesc', 'local_video_directory'),
+        '0'
+    ));
     // $cloudsettings->add( new admin_setting_configtext(
     //     'local_video_directory_cloud/cloudetype',
     //     get_string('cloudetype', 'local_video_directory'),
