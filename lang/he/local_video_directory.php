@@ -289,6 +289,8 @@ $string['cloudendpoint'] = 'קישור לענן';
 $string['cloudendpointdesc'] = 'הכנס את הקישור הראשי לענן';
 $string['cloudtype'] = 'סוג הענן';
 $string['cloudtypedesc'] = 'הכנס את סוג הענן(Azure, Google etc...)';
+$string['storagecloud'] = 'אזור ענן';
+$string['storageclouddesc'] = 'הכנס אזור ענן';
 $string['storagecloud'] = 'אכסון סרטים בענן';
 $string['storageclouddesc'] = 'אפשר אכסון סרטים בענן';
 $string['updatevimeoversion'] = 'להחלפת גירסה ניתן  ' . '<a href="https://tinyurl.com/sham4brj">לפנות לתמיכה</a>' . ' בצירוף הסרטון העדכני ופרטי הסרטון שיש לעדכן ';
