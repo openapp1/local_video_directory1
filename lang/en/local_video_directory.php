@@ -285,6 +285,8 @@ $string['cloudendpoint'] = 'Cloud Link';
 $string['cloudendpointdesc'] = 'Insert the cloud main link';
 $string['cloudtype'] = 'Cloud Name';
 $string['cloudtypedesc'] = 'Insert your Cloud Name (Azure, Google etc...)';
+$string['cloudregion'] = 'Cloud region';
+$string['cloudregiondesc'] = 'Insert your Cloud region';
 $string['storagecloud'] = 'Cloud storage';
 $string['storageclouddesc'] = 'Enable storage videos to cloud';
 $string['updatevimeoversion'] = 'To replace version  ' . '<a href="https://tinyurl.com/sham4brj">you can contact support</a>' . ' Attached is the latest video and video details to be updated';
