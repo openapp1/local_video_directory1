@@ -21,7 +21,8 @@ function upload_to_cloud_s3( $newname, $filepath) {
     $accesssecret = get_config('local_video_directory_cloud' , 'accesssecret'); //'5LJAMfD0GbqMICoDJ51wbogMA88lHwCsUXk6nCSw';
     $endpoint = get_config('local_video_directory_cloud' , 'endpoint'); //http://s3.eu-central-1.wasabisys.com/;
     $bucket = get_config('local_video_directory_cloud' , 'videobucket'); //'videodirectory';
-
+    $region = get_config('local_video_directory_cloud' , 'region');
+    
     if ($accesskey == '0') {
         echo 'No cloude has been set';
         return;
@@ -37,7 +38,7 @@ function upload_to_cloud_s3( $newname, $filepath) {
     $s3 = new S3Client([
         'endpoint' => $endpoint,
         //'debug' => true,
-        'region' => 'eu-central-1',
+        'region' => $region,
         'version' => 'latest',
         'use_path_style_endpoint' => true,
         'credentials' => $credentials
