@@ -167,7 +167,10 @@ function converting_task_cloud() {
             if ($cloudtype != 'Vimeo') {
                 // Get Video Thumbnail.
                 if (is_numeric($thumbnailseconds)) {
-                    $seconds[] = $thumbnailseconds;
+                    $alreadythere = array_search($thumbnailseconds, $seconds);
+                    if (!$alreadythere) {
+                        $seconds[] = $thumbnailseconds;
+                    }
                 }
                 if (file_exists($ffmpeg)) {
                     foreach ($seconds as $second) {
